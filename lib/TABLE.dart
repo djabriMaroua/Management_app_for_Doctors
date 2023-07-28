@@ -1,133 +1,237 @@
 import 'package:flutter/material.dart';
-
 import 'ExamenEntre.dart';
 
-class TableWidget extends StatefulWidget {final Map<String, dynamic> patientData;
-
-  TableWidget({required this.patientData});
-
-  @override
-  _TableWidgetState createState() => _TableWidgetState();
+class GField {
+  String? annee;
+  String? aub;
+  String? pn;
+  String? e;
 }
 
-class _TableWidgetState extends State<TableWidget> {
-  TextEditingController pathologiquesController = TextEditingController();
-  // Create a list of TextEditingController for each cell in the table
-  List<List<TextEditingController>> controllers = List.generate(
-    10,
-    (_) => List.generate(8, (_) => TextEditingController()),
-  );
+class TablePage extends StatefulWidget {
+  final Map<String, dynamic> patientData;
 
-  String selectedFamiliauxOption =
-      "Maternelle"; // Default value for Familiaux option
+  TablePage({required this.patientData, required String patientId});
+
+  get patientId => null;
+
+  @override
+  _TablePageState createState() => _TablePageState();
+}
+
+class _TablePageState extends State<TablePage> {
+  int? gpcaSelection;
+  List<int> gpcaNumbers = List.generate(13, (index) => index + 1);
+  List<GField> gFields = [];
+
+  List<String> eOptions = [
+    'VBP',
+    'MIU',
+    'Mort de travail',
+    'Mal formation',
+    'Autre'
+  ];
+  String? pathologie;
+  String? paternelle;
+  String? maternelle;
+  String? autre;
+
+  // Function to show the G number selection dialog
+  Future<int?> _showGNumberSelectionDialog() async {
+    return showDialog<int>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Select G Number'),
+          content: DropdownButton<int>(
+            value: gpcaSelection,
+            onChanged: (newValue) {
+              Navigator.pop(context, newValue);
+            },
+            items: gpcaNumbers
+                .map((number) => DropdownMenuItem(
+                      value: number,
+                      child: Text('G$number'),
+                    ))
+                .toList(),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Table Example'),
+        title: Text(
+          'Table Page',
+          style: TextStyle(
+            color: Colors.white, // Change the color here
+          ),
+        ),
         backgroundColor: Color(0xFF4F3981),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: Table(
-                border: TableBorder.all(),
-                columnWidths: {
-                  0: FlexColumnWidth(1),
-                  1: FlexColumnWidth(2),
-                  2: FlexColumnWidth(2),
-                  3: FlexColumnWidth(2),
-                  4: FlexColumnWidth(2),
-                  5: FlexColumnWidth(2),
-                  6: FlexColumnWidth(2),
-                  7: FlexColumnWidth(2),
-                },
-                children: [
-                  TableRow(
-                    children: [
-                      TableCell(child: Center(child: Text('Année'))),
-                      TableCell(
-                          child: Center(child: Text('Accouchement à terme'))),
-                      TableCell(
-                          child: Center(child: Text('Accouchement prématuré'))),
-                      TableCell(child: Center(child: Text('ARBT spontané'))),
-                      TableCell(child: Center(child: Text('ARBT provoqué'))),
-                      TableCell(child: Center(child: Text('MIU'))),
-                      TableCell(child: Center(child: Text('Mort-nés'))),
-                      TableCell(
-                          child: Center(child: Text('Décédés néo-nataux'))),
-                    ],
-                  ),
-                  for (int i = 0; i < 8; i++)
-                    TableRow(
-                      children: [
-                        TableCell(child: Center(child: Text(''))),
-                        for (int j = 0; j < 7; j++)
-                          TableCell(
-                            child: TextField(
-                              controller: controllers[i][j],
-                              keyboardType: TextInputType.text,
-                            ),
-                          ),
-                      ],
-                    ),
-                ],
+            // Field: G Add Button
+            ElevatedButton(
+              onPressed: () async {
+                // Show the G number selection dialog and get the selected number
+                int? selectedGNumber = await _showGNumberSelectionDialog();
+
+                if (selectedGNumber != null) {
+                  setState(() {
+                    gpcaSelection = selectedGNumber;
+                    gFields.add(GField());
+                  });
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF4F3981),
+              ),
+              child: Text(
+                'Add G',
+                style: TextStyle(color: Colors.white),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'PATHOLOGIQUES',
-                ),
-                keyboardType: TextInputType.text,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButtonFormField<String>(
-                value: selectedFamiliauxOption,
+
+            // Field: GPCA
+            if (gpcaSelection != null)
+              DropdownButtonFormField<int>(
+                value: gpcaSelection,
                 onChanged: (newValue) {
                   setState(() {
-                    selectedFamiliauxOption = newValue!;
+                    gpcaSelection = newValue;
                   });
                 },
-                items: ["Maternelle", "Paternelle", "Autre"]
-                    .map((option) => DropdownMenuItem(
-                          value: option,
-                          child: Text(option),
+                items: gpcaNumbers
+                    .map((number) => DropdownMenuItem(
+                          value: number,
+                          child: Text('G$number'),
                         ))
                     .toList(),
-                decoration: InputDecoration(
-                  labelText: '2-Familiaux',
-                ),
+                decoration: InputDecoration(labelText: 'GPCA'),
               ),
+
+            // Dynamic Fields: G
+            Column(
+              children: gFields.map((gField) {
+                return Column(
+                  children: [
+                    TextField(
+                      onChanged: (value) => gField.annee = value,
+                      decoration: InputDecoration(labelText: 'Année'),
+                    ),
+                    TextField(
+                      onChanged: (value) => gField.aub = value,
+                      decoration: InputDecoration(labelText: 'AUB'),
+                    ),
+                    TextField(
+                      onChanged: (value) => gField.pn = value,
+                      decoration: InputDecoration(labelText: 'PN'),
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: gField.e,
+                      onChanged: (newValue) {
+                        setState(() {
+                          gField.e = newValue!;
+                        });
+                      },
+                      items: eOptions
+                          .map((option) => DropdownMenuItem(
+                                value: option,
+                                child: Text(option),
+                              ))
+                          .toList(),
+                      decoration: InputDecoration(labelText: 'E'),
+                    ),
+                    SizedBox(height: 8),
+                  ],
+                );
+              }).toList(),
             ),
+
             SizedBox(height: 16),
-            ElevatedButton(       onPressed: () {
-                // Update the patientData map with the information from this page
-                for (int i = 0; i < 8; i++) {
-                  for (int j = 0; j < 7; j++) {
-                    String key = 'cell_$i$j';
-                    widget.patientData[key] = controllers[i][j].text;
-                  }
-                }
+            TextFormField(
+              onChanged: (value) {
+                setState(() {
+                  pathologie = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Pathologie'),
+            ),
 
-                // Update the patientData map with the additional information
-                widget.patientData['pathologiques'] = pathologiquesController.text;
-                widget.patientData['familiauxOption'] = selectedFamiliauxOption;
+            SizedBox(height: 16),
 
-                // Navigate to the next page (ExamenEntre)
+            // Subtitle: Familiaux
+            Text(
+              'Familiaux',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            // Field: Paternelle
+            TextFormField(
+              onChanged: (value) {
+                setState(() {
+                  paternelle = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Paternelle'),
+            ),
+
+            // Field: Maternelle
+            TextFormField(
+              onChanged: (value) {
+                setState(() {
+                  maternelle = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Maternelle'),
+            ),
+
+            // Field: Autre
+            TextFormField(
+              onChanged: (value) {
+                setState(() {
+                  autre = value;
+                });
+              },
+              decoration: InputDecoration(labelText: 'Autre'),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the NextPage and pass the data
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ExamenEntre(patientData: widget.patientData),
+                    builder: (context) => ExamenEntre(
+                      patientId: widget.patientId,
+                      gFields: gFields,
+                      patientData: {},
+                      pathologie: pathologie,
+                      paternelle: paternelle,
+                      maternelle: maternelle,
+                      autre: autre,
+                    ),
                   ),
                 );
               },
-              child: Text('Continuer '),
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFF4F3981), // Background color
+                onPrimary: Colors.white, // Text color
+                padding: EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 24.0), // Button padding
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(8.0), // Button border radius
+                ),
+              ),
+              child: Text('Continue'),
             ),
           ],
         ),

@@ -5,7 +5,14 @@ import 'TABLE.dart';
 class ExamenEntre extends StatefulWidget {
   final Map<String, dynamic> patientData;
 
-  ExamenEntre({required this.patientData});
+  ExamenEntre(
+      {required this.patientData,
+      required patientId,
+      required List<GField> gFields,
+      String? pathologie,
+      String? paternelle,
+      String? maternelle,
+      String? autre});
 
   @override
   _ExamenEntreState createState() => _ExamenEntreState();
@@ -41,7 +48,40 @@ class _ExamenEntreState extends State<ExamenEntre> {
       TextEditingController();
   TextEditingController serodiagnostixsRubeoleController =
       TextEditingController();
+  String? contractionUterineValue;
+  String? relachementValue;
+  bool isBonEtRegulier = false;
+  bool isIrregulier = false;
+  bool isBradycardie = false;
+  bool isTachycardie = false;
+  List<String> presentationOptions = ['Sommet', 'Siège', 'Transversale'];
+  String? selectedPresentation;
+  List<String> UterusOptions = ['GAL', 'GAT'];
+  String? selectedUterus;
+  List<String> positionOptions = ['Antérieur', 'Médiant', 'Postérieur'];
+  String? selectedPosition;
 
+  List<String> longueurOptions = [
+    'Long',
+    'Mi-long',
+    'Court',
+    'Envoi d\'éfacement'
+  ];
+  String? selectedLongueur;
+
+  List<String> ouvertureOptions = ['1 doigt', '2 doigt', 'effacé'];
+  String? selectedOuverture;
+  List<String> effaceOptions = [
+    '3 cm',
+    '4 cm',
+    '5 cm',
+    '6 cm',
+    '7 cm',
+    '8 cm',
+    '9 cm',
+    '10 cm'
+  ];
+  String? selectedEfface;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,29 +141,230 @@ class _ExamenEntreState extends State<ExamenEntre> {
               controller: huController,
               decoration: InputDecoration(labelText: 'HU'),
             ),
-            TextField(
-              controller: contractionUterineController,
+            DropdownButtonFormField<String>(
+              value: contractionUterineValue,
+              onChanged: (newValue) {
+                setState(() {
+                  contractionUterineValue = newValue;
+                  // Reset the relachementValue when changing contractionUterineValue
+                  relachementValue = null;
+                });
+              },
+              items: [
+                DropdownMenuItem(value: 'Positive', child: Text('Positive')),
+                DropdownMenuItem(value: 'Negative', child: Text('Negative')),
+              ],
               decoration: InputDecoration(labelText: 'Contraction Utérine'),
             ),
-            TextField(
-              controller: presentationController,
+
+            // Show the relachement dropdown only if contractionUterineValue is positive
+            if (contractionUterineValue == 'Positive')
+              DropdownButtonFormField<String>(
+                value: relachementValue,
+                onChanged: (newValue) {
+                  setState(() {
+                    relachementValue = newValue;
+                  });
+                },
+                items: [
+                  DropdownMenuItem(
+                      value: 'Bon Relachement', child: Text('Bon Relachement')),
+                  DropdownMenuItem(
+                      value: 'Mauvais Relachement',
+                      child: Text('Mauvais Relachement')),
+                ],
+                decoration: InputDecoration(labelText: 'Relachement'),
+              ),
+
+            DropdownButtonFormField<String>(
+              value: selectedPresentation, // Set the value from the variable
+              onChanged: (newValue) {
+                setState(() {
+                  selectedPresentation = newValue; // Update the selected value
+                });
+              },
+              items: presentationOptions.map((option) {
+                return DropdownMenuItem(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
               decoration: InputDecoration(labelText: 'Présentation'),
             ),
-            TextField(
-              controller: bcfController,
-              decoration: InputDecoration(labelText: 'BCF'),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'BCF',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isBonEtRegulier,
+                      onChanged: (value) {
+                        setState(() {
+                          isBonEtRegulier = value!;
+                          // Reset other checkboxes when selecting "Bon et régulier"
+                          if (isBonEtRegulier) {
+                            isIrregulier = false;
+                            isBradycardie = false;
+                            isTachycardie = false;
+                          }
+                        });
+                      },
+                    ),
+                    Text('Bon et régulier'),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isIrregulier,
+                      onChanged: (value) {
+                        setState(() {
+                          isIrregulier = value!;
+                          // Reset other checkboxes when selecting "Irrégulier"
+                          if (isIrregulier) {
+                            isBonEtRegulier = false;
+                            isBradycardie = false;
+                            isTachycardie = false;
+                          }
+                        });
+                      },
+                    ),
+                    Text('Irrégulier'),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isBradycardie,
+                      onChanged: (value) {
+                        setState(() {
+                          isBradycardie = value!;
+                          // Reset other checkboxes when selecting "Bradycardie"
+                          if (isBradycardie) {
+                            isBonEtRegulier = false;
+                            isIrregulier = false;
+                            isTachycardie = false;
+                          }
+                        });
+                      },
+                    ),
+                    Text('Bradycardie'),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isTachycardie,
+                      onChanged: (value) {
+                        setState(() {
+                          isTachycardie = value!;
+                          // Reset other checkboxes when selecting "Tachycardie"
+                          if (isTachycardie) {
+                            isBonEtRegulier = false;
+                            isIrregulier = false;
+                            isBradycardie = false;
+                          }
+                        });
+                      },
+                    ),
+                    Text('Tachycardie'),
+                  ],
+                ),
+              ],
             ),
-            TextField(
-              controller: uterusController,
-              decoration: InputDecoration(labelText: 'Utérus'),
+
+            DropdownButtonFormField<String>(
+              value: selectedUterus, // Set the value from the variable
+              onChanged: (newValue) {
+                setState(() {
+                  selectedUterus = newValue; // Update the selected value
+                });
+              },
+              items: UterusOptions.map((option) {
+                return DropdownMenuItem(
+                  value: option,
+                  child: Text(option),
+                );
+              }).toList(),
+              decoration: InputDecoration(labelText: 'Uterus'),
             ),
             TextField(
               controller: speculumController,
               decoration: InputDecoration(labelText: 'Spéculum'),
             ),
-            TextField(
-              controller: toucherVaginalController,
-              decoration: InputDecoration(labelText: 'Toucher Vaginal'),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Toucher Vaginal',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedPosition,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedPosition = newValue;
+                    });
+                  },
+                  items: positionOptions.map((option) {
+                    return DropdownMenuItem(
+                      value: option,
+                      child: Text(option),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(labelText: 'Position'),
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedLongueur,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedLongueur = newValue;
+                    });
+                  },
+                  items: longueurOptions.map((option) {
+                    return DropdownMenuItem(
+                      value: option,
+                      child: Text(option),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(labelText: 'Longueur'),
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedOuverture,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedOuverture = newValue;
+                    });
+                  },
+                  items: ouvertureOptions.map((option) {
+                    return DropdownMenuItem(
+                      value: option,
+                      child: Text(option),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(labelText: 'Ouverture'),
+                ),
+                if (selectedOuverture == 'effacé')
+                  DropdownButtonFormField<String>(
+                    value: selectedEfface,
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedEfface = newValue;
+                      });
+                    },
+                    items: effaceOptions.map((option) {
+                      return DropdownMenuItem(
+                        value: option,
+                        child: Text(option),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(labelText: 'Effacement'),
+                  ),
+              ],
             ),
             SizedBox(height: 20),
             Text(

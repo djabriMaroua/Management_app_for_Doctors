@@ -339,7 +339,7 @@ class _PatientInformationPageState extends State<PatientInformationPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TableWidget(patientData: patientData),
+                        builder: (context) => TablePage(patientData: patientData, patientId: '',),
                       ),
                     );
                   },

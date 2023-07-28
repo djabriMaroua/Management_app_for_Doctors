@@ -2,8 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'PatientInformationPage.dart';
- 
- 
+import 'TABLE.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +20,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.orange),
-      home: PatientInformationPage(),
+      home: TablePage(
+        patientData: {},
+        patientId: '',
+      ),
     );
   }
 }
