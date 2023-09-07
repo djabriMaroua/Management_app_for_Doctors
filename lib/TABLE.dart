@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'ExamenEntre.dart';
 
 class GField {
@@ -9,21 +10,23 @@ class GField {
 }
 
 class TablePage extends StatefulWidget {
-  final Map<String, dynamic> patientData;
+  final String patientId; // Declare the patientId variable as a parameter
 
-  TablePage({required this.patientData, required String patientId});
-
-  get patientId => null;
+  TablePage({required this.patientId}); // Constructor that requires patientId
 
   @override
   _TablePageState createState() => _TablePageState();
 }
 
+// Access patientId using the getter
+
 class _TablePageState extends State<TablePage> {
+  String get patientId => widget.patientId;
+  final _formKey = GlobalKey<FormState>();
   int? gpcaSelection;
   List<int> gpcaNumbers = List.generate(13, (index) => index + 1);
   List<GField> gFields = [];
-
+  Map<String, dynamic> patientData = {};
   List<String> eOptions = [
     'VBP',
     'MIU',
@@ -36,7 +39,15 @@ class _TablePageState extends State<TablePage> {
   String? maternelle;
   String? autre;
 
-  // Function to show the G number selection dialog
+  // ... Other fields and functions ...
+
+  // Function to update patientData map
+  void updatePatientData(String fieldName, dynamic value) {
+    setState(() {
+      patientData[fieldName] = value;
+    });
+  }
+
   Future<int?> _showGNumberSelectionDialog() async {
     return showDialog<int>(
       context: context,
@@ -44,7 +55,7 @@ class _TablePageState extends State<TablePage> {
         return AlertDialog(
           title: Text('Select G Number'),
           content: DropdownButton<int>(
-            value: gpcaSelection,
+            value: gpcaNumbers.first, // Default to the first G number
             onChanged: (newValue) {
               Navigator.pop(context, newValue);
             },
@@ -64,178 +75,202 @@ class _TablePageState extends State<TablePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Table Page',
-          style: TextStyle(
-            color: Colors.white, // Change the color here
-          ),
-        ),
+        title: Text('Table Page'),
         backgroundColor: Color(0xFF4F3981),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Field: G Add Button
-            ElevatedButton(
-              onPressed: () async {
-                // Show the G number selection dialog and get the selected number
-                int? selectedGNumber = await _showGNumberSelectionDialog();
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  int? selectedGNumber = await _showGNumberSelectionDialog();
 
-                if (selectedGNumber != null) {
-                  setState(() {
-                    gpcaSelection = selectedGNumber;
-                    gFields.add(GField());
-                  });
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF4F3981),
-              ),
-              child: Text(
-                'Add G',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-
-            // Field: GPCA
-            if (gpcaSelection != null)
-              DropdownButtonFormField<int>(
-                value: gpcaSelection,
-                onChanged: (newValue) {
-                  setState(() {
-                    gpcaSelection = newValue;
-                  });
+                  if (selectedGNumber != null) {
+                    setState(() {
+                      gFields.add(GField());
+                      gFields.last.annee = selectedGNumber.toString();
+                      updatePatientData('G',
+                          selectedGNumber); // Assign the selected G number to the "G" field
+                    });
+                  }
                 },
-                items: gpcaNumbers
-                    .map((number) => DropdownMenuItem(
-                          value: number,
-                          child: Text('G$number'),
-                        ))
-                    .toList(),
-                decoration: InputDecoration(labelText: 'GPCA'),
-              ),
-
-            // Dynamic Fields: G
-            Column(
-              children: gFields.map((gField) {
-                return Column(
-                  children: [
-                    TextField(
-                      onChanged: (value) => gField.annee = value,
-                      decoration: InputDecoration(labelText: 'Année'),
-                    ),
-                    TextField(
-                      onChanged: (value) => gField.aub = value,
-                      decoration: InputDecoration(labelText: 'AUB'),
-                    ),
-                    TextField(
-                      onChanged: (value) => gField.pn = value,
-                      decoration: InputDecoration(labelText: 'PN'),
-                    ),
-                    DropdownButtonFormField<String>(
-                      value: gField.e,
-                      onChanged: (newValue) {
-                        setState(() {
-                          gField.e = newValue!;
-                        });
-                      },
-                      items: eOptions
-                          .map((option) => DropdownMenuItem(
-                                value: option,
-                                child: Text(option),
-                              ))
-                          .toList(),
-                      decoration: InputDecoration(labelText: 'E'),
-                    ),
-                    SizedBox(height: 8),
-                  ],
-                );
-              }).toList(),
-            ),
-
-            SizedBox(height: 16),
-            TextFormField(
-              onChanged: (value) {
-                setState(() {
-                  pathologie = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Pathologie'),
-            ),
-
-            SizedBox(height: 16),
-
-            // Subtitle: Familiaux
-            Text(
-              'Familiaux',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            // Field: Paternelle
-            TextFormField(
-              onChanged: (value) {
-                setState(() {
-                  paternelle = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Paternelle'),
-            ),
-
-            // Field: Maternelle
-            TextFormField(
-              onChanged: (value) {
-                setState(() {
-                  maternelle = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Maternelle'),
-            ),
-
-            // Field: Autre
-            TextFormField(
-              onChanged: (value) {
-                setState(() {
-                  autre = value;
-                });
-              },
-              decoration: InputDecoration(labelText: 'Autre'),
-            ),
-
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the NextPage and pass the data
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ExamenEntre(
-                      patientId: widget.patientId,
-                      gFields: gFields,
-                      patientData: {},
-                      pathologie: pathologie,
-                      paternelle: paternelle,
-                      maternelle: maternelle,
-                      autre: autre,
-                    ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xFF4F3981), // Background color
-                onPrimary: Colors.white, // Text color
-                padding: EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 24.0), // Button padding
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(8.0), // Button border radius
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF4F3981),
+                ),
+                child: Text(
+                  'Add G',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-              child: Text('Continue'),
-            ),
-          ],
+
+              // Field: GPCA
+              if (gpcaSelection != null)
+                DropdownButtonFormField<int>(
+                  value: gpcaSelection,
+                  onChanged: (newValue) {
+                    setState(() {
+                      gpcaSelection = newValue;
+                      updatePatientData('gpcaSelection', newValue);
+                    });
+                  },
+                  items: gpcaNumbers
+                      .map((number) => DropdownMenuItem(
+                            value: number,
+                            child: Text('G$number'),
+                          ))
+                      .toList(),
+                  decoration: InputDecoration(labelText: 'GPCA'),
+                ),
+
+              // Dynamic Fields: G
+              Column(
+                children: gFields.map((gField) {
+                  return Column(
+                    children: [
+                      Text('G${gField.annee}'),
+
+                      // Other fields for "G" (e.g., AUB, PN, E)
+                      TextFormField(
+                        onChanged: (value) {
+                          updatePatientData('g_aub', value);
+                        },
+                        decoration: InputDecoration(labelText: 'AUB'),
+                      ),
+                      TextFormField(
+                        onChanged: (value) {
+                          updatePatientData('g_pn', value);
+                        },
+                        decoration: InputDecoration(labelText: 'PN'),
+                      ),
+                      DropdownButtonFormField<String>(
+                        value: gField.e,
+                       
+                        onChanged: (newValue) {
+                          setState(() {
+                            gField.e = newValue!;
+                          });
+                           updatePatientData('e', newValue);
+                        },
+                        items: eOptions
+                            .map((option) => DropdownMenuItem(
+                                  value: option,
+                                  child: Text(option),
+                                  
+                                ))
+                                
+                            .toList(),
+                           
+                        decoration: InputDecoration(labelText: 'E'),
+                      ),
+                      
+                      SizedBox(height: 8),
+                    ],
+                      
+                  );
+                
+                }).toList(),
+              ),
+
+              SizedBox(height: 16),
+              TextFormField(
+                onChanged: (value) {
+                  updatePatientData('pathologie', value);
+                },
+                decoration: InputDecoration(labelText: 'Pathologie'),
+              ),
+
+              SizedBox(height: 16),
+
+              Text(
+                'Familiaux',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              TextFormField(
+                onChanged: (value) {
+                  updatePatientData('paternelle', value);
+                },
+                decoration: InputDecoration(labelText: 'Paternelle'),
+              ),
+
+              TextFormField(
+                onChanged: (value) {
+                  updatePatientData('maternelle', value);
+                },
+                decoration: InputDecoration(labelText: 'Maternelle'),
+              ),
+
+              TextFormField(
+                onChanged: (value) {
+                  updatePatientData('autre', value);
+                },
+                decoration: InputDecoration(labelText: 'Autre'),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+                  print(patientData);
+                  // Call the function to submit data to Firestore
+                  updateDataInFirestore(patientData, patientId);
+
+                  // Navigate to the next page or perform other actions
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ExamenEntre(patientId: patientId),
+                    ),
+                  );
+                  // ...
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Color(0xFF4F3981),
+                  onPrimary: Colors.white,
+                  padding:
+                      EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                child: Text('Continue'),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  // Function to submit data to Firestore
+  Future<void> updateDataInFirestore(
+      Map<String, dynamic> newData, String documentId) async {
+    try {
+      // Reference to the Firestore document
+      DocumentReference documentReference =
+          FirebaseFirestore.instance.collection('patients').doc(documentId);
+
+      // Fetch the existing data
+      DocumentSnapshot documentSnapshot = await documentReference.get();
+
+      if (documentSnapshot.exists) {
+        print("exsiste");
+        // Merge the existing data with the new data
+        Map<String, dynamic> existingData =
+            documentSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> mergedData = {...existingData, ...newData};
+
+        // Update the document with the merged data
+        await documentReference.update(mergedData);
+
+        print('Data updated in Firestore for document $documentId');
+      } else {
+        print('Document with ID $documentId does not exist.');
+      }
+    } catch (error) {
+      print('Error updating data in Firestore: $error');
+    }
   }
 }

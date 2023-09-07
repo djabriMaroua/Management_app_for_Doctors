@@ -1,24 +1,51 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'PatientInformationPage.dart';
 import 'TABLE.dart';
 
 class ExamenEntre extends StatefulWidget {
-  final Map<String, dynamic> patientData;
+  final String patientId; // Declare the patientId variable as a parameter
 
-  ExamenEntre(
-      {required this.patientData,
-      required patientId,
-      required List<GField> gFields,
-      String? pathologie,
-      String? paternelle,
-      String? maternelle,
-      String? autre});
+  ExamenEntre({required this.patientId}); // Constructor that requires patientId
 
   @override
   _ExamenEntreState createState() => _ExamenEntreState();
 }
 
 class _ExamenEntreState extends State<ExamenEntre> {
+  String get patientId => widget.patientId; // Access patientId using the getter
+
+  // Retrieve the existing data from Firestore
+  Future<void> updateDataInFirestore(
+      Map<String, dynamic> newData, String documentId) async {
+    try {
+      // Reference to the Firestore document
+      DocumentReference documentReference =
+          FirebaseFirestore.instance.collection('patients').doc(documentId);
+
+      // Fetch the existing data
+      DocumentSnapshot documentSnapshot = await documentReference.get();
+
+      if (documentSnapshot.exists) {
+        print("exsiste");
+        // Merge the existing data with the new data
+        Map<String, dynamic> existingData =
+            documentSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> mergedData = {...existingData, ...newData};
+
+        // Update the document with the merged data
+        await documentReference.update(mergedData);
+
+        print('Data updated in Firestore for document $documentId');
+      } else {
+        print('Document with ID $documentId does not exist.');
+      }
+    } catch (error) {
+      print('Error updating data in Firestore: $error');
+    }
+  }
+
+  Map<String, dynamic> patientData = {};
   // Create TextEditingController for each field
   TextEditingController poidsController = TextEditingController();
   TextEditingController tailleController = TextEditingController();
@@ -48,6 +75,77 @@ class _ExamenEntreState extends State<ExamenEntre> {
       TextEditingController();
   TextEditingController serodiagnostixsRubeoleController =
       TextEditingController();
+  TextEditingController nombreDeFetusController = TextEditingController();
+  TextEditingController activiteCardiaqueController = TextEditingController();
+  TextEditingController frequenceCardiaqueController = TextEditingController();
+  TextEditingController mobiliteController = TextEditingController();
+  TextEditingController longueurCranioCaudaleController =
+      TextEditingController();
+  TextEditingController bipController = TextEditingController();
+  TextEditingController perimetreCranienController = TextEditingController();
+  TextEditingController perimetreAbdominaleController = TextEditingController();
+  TextEditingController clarteNucaleController = TextEditingController();
+  TextEditingController datController = TextEditingController();
+  TextEditingController poleCephaliqueController = TextEditingController();
+  TextEditingController abdomenController = TextEditingController();
+  TextEditingController membreController = TextEditingController();
+  TextEditingController annexesController = TextEditingController();
+  TextEditingController conclusionController = TextEditingController();
+  TextEditingController nombreDeFetusEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController activiteCardiaqueEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController frequenceCardiaqueEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController mobiliteEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController longueurCranioCaudaleEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController bipEchoDeuxiemeController = TextEditingController();
+  TextEditingController perimetreCranienEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController perimetreAbdominaleEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController clarteNucaleEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController datEchoDeuxiemeController = TextEditingController();
+  TextEditingController poleCephaliqueEchoDeuxiemeController =
+      TextEditingController();
+  TextEditingController abdomenEchoDeuxiemeController = TextEditingController();
+  TextEditingController membreEchoDeuxiemeController = TextEditingController();
+  TextEditingController annexesEchoDeuxiemeController = TextEditingController();
+  TextEditingController conclusionEchoDeuxiemeController =
+      TextEditingController();
+
+  // Create TextEditingController for Écho du troisième trimestre fields
+  TextEditingController nombreDeFetusEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController activiteCardiaqueEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController frequenceCardiaqueEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController mobiliteEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController longueurCranioCaudaleEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController bipEchoTroisiemeController = TextEditingController();
+  TextEditingController perimetreCranienEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController perimetreAbdominaleEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController clarteNucaleEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController datEchoTroisiemeController = TextEditingController();
+  TextEditingController poleCephaliqueEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController abdomenEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController membreEchoTroisiemeController = TextEditingController();
+  TextEditingController annexesEchoTroisiemeController =
+      TextEditingController();
+  TextEditingController conclusionEchoTroisiemeController =
+      TextEditingController();
+
   String? contractionUterineValue;
   String? relachementValue;
   bool isBonEtRegulier = false;
@@ -406,6 +504,302 @@ class _ExamenEntreState extends State<ExamenEntre> {
               decoration: InputDecoration(labelText: 'Sérodiagnostixs Rubéole'),
             ),
             SizedBox(height: 20),
+            Text(
+              '4- Échographie du premier trimestre',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            TextField(
+              controller: nombreDeFetusController,
+              decoration: InputDecoration(labelText: 'Nombre de fœtus'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Vitalité',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: activiteCardiaqueController,
+              decoration: InputDecoration(labelText: 'Activité cardiaque'),
+            ),
+            TextField(
+              controller: frequenceCardiaqueController,
+              decoration: InputDecoration(labelText: 'Fréquence cardiaque'),
+            ),
+            TextField(
+              controller: mobiliteController,
+              decoration: InputDecoration(labelText: 'Mobilité'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Biometrie',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: longueurCranioCaudaleController,
+              decoration: InputDecoration(labelText: 'Longueur cranio-caudale'),
+            ),
+            TextField(
+              controller: bipController,
+              decoration: InputDecoration(labelText: 'BIP'),
+            ),
+            TextField(
+              controller: perimetreCranienController,
+              decoration: InputDecoration(labelText: 'Périmètre crânien'),
+            ),
+            TextField(
+              controller: perimetreAbdominaleController,
+              decoration: InputDecoration(labelText: 'Périmètre abdominal'),
+            ),
+            TextField(
+              controller: clarteNucaleController,
+              decoration: InputDecoration(labelText: 'Clarté nucale'),
+            ),
+            TextField(
+              controller: datController,
+              decoration: InputDecoration(labelText: 'DAT'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Morphologie',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: poleCephaliqueController,
+              decoration: InputDecoration(labelText: 'Pôle céphalique'),
+            ),
+            TextField(
+              controller: abdomenController,
+              decoration: InputDecoration(labelText: 'Abdomen'),
+            ),
+            TextField(
+              controller: membreController,
+              decoration: InputDecoration(labelText: 'Membre'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Annexes',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: annexesController,
+              decoration: InputDecoration(labelText: 'Annexes'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Conclusion',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: conclusionController,
+              decoration: InputDecoration(labelText: 'Conclusion'),
+            ),
+
+            SizedBox(height: 20),
+
+            SizedBox(height: 20),
+            SizedBox(height: 20),
+            Text(
+              '4- Échographie du deuxime trimestre',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            TextField(
+              controller: nombreDeFetusEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Nombre de fœtus'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Vitalité',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: activiteCardiaqueEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Activité cardiaque'),
+            ),
+            TextField(
+              controller: frequenceCardiaqueEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Fréquence cardiaque'),
+            ),
+            TextField(
+              controller: mobiliteEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Mobilité'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Biometrie',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: longueurCranioCaudaleEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Longueur cranio-caudale'),
+            ),
+            TextField(
+              controller: bipEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'BIP'),
+            ),
+            TextField(
+              controller: perimetreCranienEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Périmètre crânien'),
+            ),
+            TextField(
+              controller: perimetreAbdominaleEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Périmètre abdominal'),
+            ),
+            TextField(
+              controller: clarteNucaleEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Clarté nucale'),
+            ),
+            TextField(
+              controller: datEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'DAT'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Morphologie',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: poleCephaliqueEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Pôle céphalique'),
+            ),
+            TextField(
+              controller: abdomenEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Abdomen'),
+            ),
+            TextField(
+              controller: membreEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Membre'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Annexes',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: annexesEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Annexes'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Conclusion',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: conclusionEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'Conclusion'),
+            ),
+
+            SizedBox(height: 20),
+
+            Text(
+              '6- Échographie du troisième trimestre',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            TextField(
+              controller: nombreDeFetusEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Nombre de fœtus'),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Vitalité',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: activiteCardiaqueEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Activité cardiaque'),
+            ),
+            TextField(
+              controller: frequenceCardiaqueEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Fréquence cardiaque'),
+            ),
+            TextField(
+              controller: mobiliteEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Mobilité'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Biometrie',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: longueurCranioCaudaleEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Longueur cranio-caudale'),
+            ),
+            TextField(
+              controller: bipController,
+              decoration: InputDecoration(labelText: 'BIP'),
+            ),
+            TextField(
+              controller: perimetreCranienEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Périmètre crânien'),
+            ),
+            TextField(
+              controller: perimetreAbdominaleEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Périmètre abdominal'),
+            ),
+            TextField(
+              controller: clarteNucaleEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Clarté nucale'),
+            ),
+            TextField(
+              controller: datEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'DAT'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Morphologie',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: poleCephaliqueEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Pôle céphalique'),
+            ),
+            TextField(
+              controller: abdomenEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Abdomen'),
+            ),
+            TextField(
+              controller: membreEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Membre'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Annexes',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: annexesEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Annexes'),
+            ),
+
+            SizedBox(height: 10),
+            Text(
+              'Conclusion',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: conclusionEchoTroisiemeController,
+              decoration: InputDecoration(labelText: 'Conclusion'),
+            ),
+
+            SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Update the patientData map with the information from this page
@@ -413,34 +807,118 @@ class _ExamenEntreState extends State<ExamenEntre> {
                 // ... (add other fields)
 
                 // Save patient information to Firestore
-                widget.patientData['poids'] = poidsController.text;
-                widget.patientData['taille'] = tailleController.text;
-                widget.patientData['albuminurie'] = albuminurieController.text;
-                widget.patientData['bcf'] = bcfController.text;
-                widget.patientData['bw'] = bwController.text;
-                widget.patientData['contractionUterine'] =
+                patientData['poids'] = poidsController.text;
+                patientData['taille'] = tailleController.text;
+                patientData['albuminurie'] = albuminurieController.text;
+                patientData['bcf'] = bcfController.text;
+                patientData['bw'] = bwController.text;
+                patientData['contractionUterine'] =
                     contractionUterineController;
-                widget.patientData['contractionUterine'] =
+                patientData['contractionUterine'] =
                     contractionUterineController.text;
-                widget.patientData['glycemie'] = glycemieController.text;
-                widget.patientData['groupeSanguin'] =
-                    groupeSanguinController.text;
-                widget.patientData['hu'] = huController.text;
-                widget.patientData['labstix'] = labstixController.text;
-                widget.patientData['oedemes'] = oedemesController.text;
-                widget.patientData['particularites'] = particularitesController;
-                widget.patientData['pouls'] = poulsController;
-                widget.patientData['poids'] = poidsController;
-                widget.patientData['presentation'] = presentationController;
-                widget.patientData['serodiagnostixsRubeole'] =
+                patientData['glycemie'] = glycemieController.text;
+                patientData['groupeSanguin'] = groupeSanguinController.text;
+                patientData['hu'] = huController.text;
+                patientData['labstix'] = labstixController.text;
+                patientData['oedemes'] = oedemesController.text;
+                patientData['particularites'] = particularitesController.text;
+                patientData['pouls'] = poulsController.text;
+                patientData['poids'] = poidsController.text;
+                patientData['presentation'] = presentationController.text;
+                patientData['serodiagnostixsRubeole'] =
                     serodiagnostixsRubeoleController.text;
-                widget.patientData['serodiagnostixsTaxoplasmose'] =
+                patientData['serodiagnostixsTaxoplasmose'] =
                     serodiagnostixsTaxoplasmoseController.text;
-                widget.patientData['speculum'] = speculumController.text;
-                widget.patientData['ta'] = taController.text;
-                widget.patientData['taille'] = tailleController.text;
-                widget.patientData['toucherVaginal'] =
-                    toucherVaginalController.text;
+                patientData['speculum'] = speculumController.text;
+                patientData['ta'] = taController.text;
+                patientData['taille'] = tailleController.text;
+                patientData['toucherVaginal'] = toucherVaginalController.text;
+                patientData['nombreDeFetus'] = nombreDeFetusController.text;
+                patientData['activiteCardiaque'] =
+                    activiteCardiaqueController.text;
+                patientData['frequenceCardiaque'] =
+                    frequenceCardiaqueController.text;
+                patientData['mobilite'] = mobiliteController.text;
+                patientData['longueurCranioCaudale'] =
+                    longueurCranioCaudaleController.text;
+                patientData['bip'] = bipController.text;
+                patientData['perimetreCranien'] =
+                    perimetreCranienController.text;
+                patientData['perimetreAbdominale'] =
+                    perimetreAbdominaleController.text;
+                patientData['clarteNucale'] = clarteNucaleController.text;
+                patientData['dat'] = datController.text;
+                patientData['poleCephalique'] = poleCephaliqueController.text;
+                patientData['abdomen'] = abdomenController.text;
+                patientData['membre'] = membreController.text;
+                patientData['annexes'] = annexesController.text;
+                patientData['conclusion'] = conclusionController.text;
+
+//                   //////////////////////////////////////////////:
+                patientData['nombreDeFetusEchoDeuxieme '] =
+                    nombreDeFetusEchoDeuxiemeController.text;
+                patientData['activiteCardiaqueEchoDeuxieme'] =
+                    activiteCardiaqueEchoDeuxiemeController.text;
+                patientData['frequenceCardiaqueEchoDeuxieme'] =
+                    frequenceCardiaqueEchoDeuxiemeController.text;
+                patientData['mobiliteEchoDeuxieme'] =
+                    mobiliteEchoDeuxiemeController.text;
+                patientData['longueurCranioCaudaleEchoDeuxieme'] =
+                    longueurCranioCaudaleEchoDeuxiemeController.text;
+                patientData['bipEchoDeuxieme'] = bipEchoDeuxiemeController.text;
+                patientData['perimetreCranienEchoDeuxieme'] =
+                    perimetreCranienEchoDeuxiemeController.text;
+                patientData['perimetreAbdominaleEchoDeuxieme'] =
+                    perimetreAbdominaleEchoDeuxiemeController.text;
+                patientData['clarteNucaleEchoDeuxieme'] =
+                    clarteNucaleEchoDeuxiemeController.text;
+                patientData['datEchoDeuxieme'] = datEchoDeuxiemeController.text;
+                patientData['poleCephaliqueEchoDeuxieme'] =
+                    poleCephaliqueEchoDeuxiemeController.text;
+                patientData['abdomenEchoDeuxieme'] =
+                    abdomenEchoDeuxiemeController.text;
+                patientData['membreEchoDeuxieme'] =
+                    membreEchoDeuxiemeController.text;
+                patientData['annexesEchoDeuxieme'] =
+                    annexesEchoDeuxiemeController.text;
+                patientData['conclusionEchoDeuxieme'] =
+                    conclusionEchoDeuxiemeController.text;
+// ////////////////////////////////////////////
+//                   patientData['nombreDeFetusEchoTroisieme'] =
+//                       nombreDeFetusEchoTroisiemeController.text;
+//                   patientData['activiteCardiaqueEchoTroisieme'] =
+//                       activiteCardiaqueEchoTroisiemeController.text;
+//                   patientData['frequenceCardiaqueEchoTroisieme'] =
+//                       frequenceCardiaqueEchoTroisiemeController.text;
+//                   patientData['mobiliteEchoTroisieme'] =
+//                       mobiliteEchoTroisiemeController.text;
+//                   patientData['longueurCranioCaudaleEchoTroisieme'] =
+//                       longueurCranioCaudaleEchoTroisiemeController.text;
+//                   patientData['bipEchoTroisieme'] =
+//                       bipEchoTroisiemeController.text;
+//                   patientData['perimetreCranienEchoTroisieme'] =
+//                       perimetreCranienEchoTroisiemeController.text;
+//                   patientData['perimetreAbdominaleEchoTroisieme'] =
+//                       perimetreAbdominaleEchoTroisiemeController.text;
+//                   patientData['clarteNucaleEchoTroisieme'] =
+//                       clarteNucaleEchoTroisiemeController.text;
+//                   patientData['datEchoTroisieme'] =
+//                       datEchoTroisiemeController.text;
+//                   patientData['poleCephaliqueEchoTroisieme'] =
+//                       poleCephaliqueEchoTroisiemeController.text;
+//                   patientData['abdomenEchoTroisieme'] =
+//                       abdomenEchoTroisiemeController.text;
+//                   patientData['membreEchoTroisieme'] =
+//                       membreEchoTroisiemeController.text;
+//                   patientData['annexesEchoTroisieme'] =
+//                       annexesEchoTroisiemeController.text;
+//                   patientData['conclusionEchoTroisieme'] =
+//                       conclusionEchoTroisiemeController.text;
+
+                // Update the patientData map with the information from this page
+                updateDataInFirestore(patientData, patientId);
+                // ... (add other fields)
+                // S ave patient information to Firestore
 
                 // Handle button press here
               },

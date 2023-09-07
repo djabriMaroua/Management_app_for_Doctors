@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
+import 'package:mon_doctor/ExamenEntre.dart';
 
 import 'TABLE.dart';
 
@@ -26,6 +27,26 @@ class PatientInformationPage extends StatefulWidget {
   @override
   _PatientInformationPageState createState() => _PatientInformationPageState();
 }
+void _submitDataToFirestore(
+      Map<String, dynamic> patientData, String patientId) {
+    try {
+      // Access the Firestore instance
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Define the collection name (assuming "patientsinfo" is your collection name)
+      CollectionReference patientsCollection = firestore.collection('patients');
+
+      // Add the patient data to Firestore
+      patientsCollection.doc(patientId).set(patientData).then((_) {
+        print("Patient information added with ID: ${patientId}");
+      }).catchError((error) {
+        print("Error adding patient information: $error");
+      });
+    } catch (e) {
+      // Handle any errors that occur during data submission
+      print('Error adding data to Firestore: $e');
+    }
+  }
 
 class _PatientInformationPageState extends State<PatientInformationPage> {
   final _formKey = GlobalKey<FormState>();
@@ -126,7 +147,7 @@ class _PatientInformationPageState extends State<PatientInformationPage> {
                   child: TextFormField(
                     controller: dateNaissanceController,
                     style:
-                        TextStyle(color: Color(0xFF4F3981)), // Set text color
+                    TextStyle(color: Color(0xFF4F3981)), // Set text color
                     decoration: InputDecoration(labelText: 'Date de naissance'),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -173,7 +194,8 @@ class _PatientInformationPageState extends State<PatientInformationPage> {
                 style: TextStyle(color: Color(0xFF4F3981)), // Set text color
                 decoration: InputDecoration(labelText: 'Motif de consultation'),
                 validator: (value) {
-                  if (value!.isEmpty) {
+                  if (value!.isEmpty) 
+                  {
                     return 'Veuillez entrer le motif de consultation';
                   }
                   return null;
@@ -315,7 +337,16 @@ class _PatientInformationPageState extends State<PatientInformationPage> {
               SizedBox(height: 16),
              ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
+                 
+      // If the form is valid, update the patientData map with the information
+      patientData['nom'] = nomController.text;
+      // ... (add other fields to patientData)
+
+      // Save patient information to Firestore
+     
+
+      // Navigate to the next page (TableWidget)
+      
                     // If the form is valid, update the patientData map with the information
                     patientData['nom'] = nomController.text;
                     patientData['prenom'] = prenomController.text;
@@ -330,18 +361,21 @@ class _PatientInformationPageState extends State<PatientInformationPage> {
                       patientData ['dureed']= dureed.text;
                       patientData ['ageMariage']= ageMariageController.text;
                      patientData  ['contraception']= selectedContraception;
-                    };
+                    
+                    String patientId = generatePatientId(nomController.text, prenomController.text);
+                     _submitDataToFirestore(patientData,patientId);
 
                     // Save patient information to Firestore
-                    savePatientInformation(patientData);
+                     
+
 
                     // Navigate to the next page (TableWidget)
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TablePage(patientData: patientData, patientId: '',),
-                      ),
-                    );
+                   Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => TablePage(patientId: patientId),
+  ),
+);
                   },
                  
                 child: Text(
@@ -371,4 +405,8 @@ class _PatientInformationPageState extends State<PatientInformationPage> {
       print("Error adding patient information: $error");
     });
   }
+  
+  String generatePatientId(String firstName, String lastName) {
+  return '$firstName$lastName';
+}
 }

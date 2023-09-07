@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mon_doctor/searchPatient.dart';
 
 import 'PatientInformationPage.dart';
 import 'TABLE.dart';
@@ -20,10 +21,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.orange),
-      home: TablePage(
-        patientData: {},
-        patientId: '',
-      ),
+      home: SearchPatientPage()
+      
     );
   }
 }
