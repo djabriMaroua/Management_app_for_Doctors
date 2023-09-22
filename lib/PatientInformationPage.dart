@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
 import 'package:mon_doctor/ExamenEntre.dart';
-
 import 'TABLE.dart';
 
 void main() {
@@ -377,11 +376,11 @@ class _PatientInformationPageState extends State<PatientInformationPage> {
   ),
 );
                   },
-                 
+
                 child: Text(
                   'Continuer',
                   style: TextStyle(color: Color(0xFF4F3981)), // Set text color
-                ),
+                     ),
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF4F3981), // Set button color
                 ),

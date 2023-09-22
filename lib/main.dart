@@ -21,8 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.orange),
-      home: SearchPatientPage()
-      
+       home:SearchPatientPage()
     );
   }
 }
