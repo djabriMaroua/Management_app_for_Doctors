@@ -3,11 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'ExamenEntre.dart';
 
 class GField {
-  String? annee;
+  String? gNumber; // G number
   String? aub;
   String? pn;
   String? e;
 }
+
 
 class TablePage extends StatefulWidget {
   final String patientId; // Declare the patientId variable as a parameter
@@ -89,14 +90,16 @@ class _TablePageState extends State<TablePage> {
                 onPressed: () async {
                   int? selectedGNumber = await _showGNumberSelectionDialog();
 
-                  if (selectedGNumber != null) {
-                    setState(() {
-                      gFields.add(GField());
-                      gFields.last.annee = selectedGNumber.toString();
-                      updatePatientData('G',
-                          selectedGNumber); // Assign the selected G number to the "G" field
-                    });
-                  }
+if (selectedGNumber != null) {
+  setState(() {
+    GField newGField = GField();
+    newGField.gNumber = 'G$selectedGNumber';
+
+    gFields.add(newGField);
+    updatePatientData('G', selectedGNumber); // Assign the selected G number to the "G" field
+  });
+}
+
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF4F3981),
@@ -127,53 +130,53 @@ class _TablePageState extends State<TablePage> {
                 ),
 
               // Dynamic Fields: G
-              Column(
-                children: gFields.map((gField) {
-                  return Column(
-                    children: [
-                      Text('G${gField.annee}'),
+             // Dynamic Fields: G
+Column(
+  children: gFields.map((gField) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(gField.gNumber!), // Display the G number
 
-                      // Other fields for "G" (e.g., AUB, PN, E)
-                      TextFormField(
-                        onChanged: (value) {
-                          updatePatientData('g_aub', value);
-                        },
-                        decoration: InputDecoration(labelText: 'AUB'),
-                      ),
-                      TextFormField(
-                        onChanged: (value) {
-                          updatePatientData('g_pn', value);
-                        },
-                        decoration: InputDecoration(labelText: 'PN'),
-                      ),
-                      DropdownButtonFormField<String>(
-                        value: gField.e,
-                       
-                        onChanged: (newValue) {
-                          setState(() {
-                            gField.e = newValue!;
-                          });
-                           updatePatientData('e', newValue);
-                        },
-                        items: eOptions
-                            .map((option) => DropdownMenuItem(
-                                  value: option,
-                                  child: Text(option),
-                                  
-                                ))
-                                
-                            .toList(),
-                           
-                        decoration: InputDecoration(labelText: 'E'),
-                      ),
-                      
-                      SizedBox(height: 8),
-                    ],
-                      
-                  );
+        TextFormField(
+          onChanged: (value) {
+            gField.aub = value; // Associate AUB with the corresponding G number
+            updatePatientData('G_AUB_${gField.gNumber}', value);
+          },
+          decoration: InputDecoration(labelText: 'AUB'),
+        ),
+        TextFormField(
+          onChanged: (value) {
+            gField.pn = value; // Associate PN with the corresponding G number
+            updatePatientData('G_PN_${gField.gNumber}', value);
+          },
+          decoration: InputDecoration(labelText: 'PN'),
+        ),
+        DropdownButtonFormField<String>(
+          value: gField.e,
+          onChanged: (newValue) {
+            setState(() {
+              gField.e = newValue;
+            });
+            updatePatientData('G_E_${gField.gNumber}', newValue); // Associate E with the corresponding G number
+          },
+          items: eOptions
+              .map((option) => DropdownMenuItem(
+                    value: option,
+                    child: Text(option),
+                  ))
+              .toList(),
+          decoration: InputDecoration(labelText: 'E'),
+        ),
+
+        SizedBox(height: 8),
+      ],
+    );
+  }).toList(),
+),
+
                 
-                }).toList(),
-              ),
+                 
 
               SizedBox(height: 16),
               TextFormField(

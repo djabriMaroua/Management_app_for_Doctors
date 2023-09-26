@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'editPatieny2.dart';
- 
 
 class GField {
   String? annee;
@@ -150,30 +149,24 @@ class _TablePageState extends State<TablePage> {
                       ),
                       DropdownButtonFormField<String>(
                         value: gField.e,
-                       
                         onChanged: (newValue) {
                           setState(() {
                             gField.e = newValue!;
                           });
-                           updatePatientData('e', newValue);
+                          updatePatientData('e', newValue);
                         },
                         items: eOptions
                             .map((option) => DropdownMenuItem(
                                   value: option,
                                   child: Text(option),
-                                  
                                 ))
-                                
                             .toList(),
-                           
                         decoration: InputDecoration(labelText: 'E'),
                       ),
-                      
+
                       SizedBox(height: 8),
                     ],
-                      
                   );
-                
                 }).toList(),
               ),
 
@@ -248,46 +241,44 @@ class _TablePageState extends State<TablePage> {
 
   // Function to submit data to Firestore
   // Function to submit data to Firestore
-Future<void> updateDataInFirestore(
-    Map<String, dynamic> newData, String documentId) async {
-  try {
-    // Reference to the Firestore document
-    DocumentReference documentReference =
-        FirebaseFirestore.instance.collection('patients').doc(documentId);
+  Future<void> updateDataInFirestore(
+      Map<String, dynamic> newData, String documentId) async {
+    try {
+      // Reference to the Firestore document
+      DocumentReference documentReference =
+          FirebaseFirestore.instance.collection('patients').doc(documentId);
 
-    // Check if the patient document exists
-    DocumentSnapshot documentSnapshot = await documentReference.get();
-    if (!documentSnapshot.exists) {
-      print('Patient with ID $documentId does not exist.');
-      return; // Exit the function if the patient does not exist
+      // Check if the patient document exists
+      DocumentSnapshot documentSnapshot = await documentReference.get();
+      if (!documentSnapshot.exists) {
+        print('Patient with ID $documentId does not exist.');
+        return; // Exit the function if the patient does not exist
+      }
+
+      // Merge the existing data with the new data
+      Map<String, dynamic> existingData =
+          documentSnapshot.data() as Map<String, dynamic>;
+      Map<String, dynamic> mergedData = {...existingData, ...newData};
+
+      // Update the document with the merged data
+      await documentReference.update(mergedData);
+
+      print('Data updated in Firestore for document $documentId');
+
+      // Create a subcollection with a timestamp as the name and store the updated data within it
+      CollectionReference updatesCollection =
+          documentReference.collection('updates');
+
+      // Create a timestamp for the subcollection name
+      String timestamp = DateTime.now().toUtc().toIso8601String();
+
+      // Create a document within the subcollection and store the updated data
+      await updatesCollection.doc(timestamp).set(mergedData);
+
+      print(
+          'Data stored in the "updates" subcollection for document $documentId with timestamp $timestamp');
+    } catch (error) {
+      print('Error updating data in Firestore: $error');
     }
-
-    // Merge the existing data with the new data
-    Map<String, dynamic> existingData =
-        documentSnapshot.data() as Map<String, dynamic>;
-    Map<String, dynamic> mergedData = {...existingData, ...newData};
-
-    // Update the document with the merged data
-    await documentReference.update(mergedData);
-
-    print('Data updated in Firestore for document $documentId');
-
-    // Create a subcollection with a timestamp as the name and store the updated data within it
-    CollectionReference updatesCollection =
-        documentReference.collection('updates');
-
-    // Create a timestamp for the subcollection name
-    String timestamp = DateTime.now().toUtc().toIso8601String();
-
-    // Create a document within the subcollection and store the updated data
-    await updatesCollection.doc(timestamp).set(mergedData);
-
-    print(
-        'Data stored in the "updates" subcollection for document $documentId with timestamp $timestamp');
-  } catch (error) {
-    print('Error updating data in Firestore: $error');
   }
 }
-
-  }
- 

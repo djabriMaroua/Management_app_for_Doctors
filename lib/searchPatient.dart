@@ -117,6 +117,55 @@ class PatientDataWidget extends StatelessWidget {
     required this.onEditPressed,
   });
 
+  final List<Map<String, dynamic>> displayGroups = [
+    {
+      'title': 'Personal Information',
+      'fields': ['nom', 'prenom', 'dateNaissance','adresse','numeroTelephone'],
+    },
+    {
+      'title': 'Observation à l\'entré',
+      'fields': ['motifConsultation', 'ddr', 'termeCalcule'],
+    },
+    {
+      'title':'Antecédent',
+      'fields': ['menarchie','dureed','ageMariage','caractereCycle','contraception'],
+    },
+    {
+      'title':'Obstétricaux',
+      'fields':['G_AUB_G1','G_PN_G1','G_E_G1','G_AUB_G2','G_PN_G2','G_E_G2','G_AUB_G3','G_PN_G3','G_E_G3','G_AUB_G4','G_PN_G4','G_E_G4','G_AUB_G5','G_PN_G5','G_E_G5','G_AUB_G6','G_PN_G6','G_E_G6','G_AUB_G7','G_PN_G7','G_E_G7'],
+    },
+    {
+      'title':'Pathologie',
+      'fields':'pathologie',
+    },
+    {
+       'title':'Familiaux',
+      'fields':['paternelle','maternelle','autre'],
+    },
+    {
+      'title':'Examen Générale',
+      'fields':['poids','taille','pouls','ta','oedemes','labstix','particularites'],
+    },
+    { 
+      'title':'Examen obstétricale',
+      'fields':['hu','contractionUterine','presentation','bcf','uterus','speculum','toucherVaginal',],
+
+    },
+    { 
+      'title':'Examen complémentaire',
+      'fields':['Examen complémentaire', 'groupeSanguin ',
+  'fns ',
+   ' glycemie ',
+ ' ureeSanguine ',
+  'albuminurie ',
+   ' bw '
+    'serodiagnostixsTaxoplasmose '
+      ' serodiagnostixsRubeole ']
+
+    },
+    // Add other group titles and fields as needed
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -127,24 +176,37 @@ class PatientDataWidget extends StatelessWidget {
             'Patient Data:',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold, // Make section title bold
+              fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 10), // Add spacing below section title
-          for (var entry in patientData.entries)
+          SizedBox(height: 10),
+          for (var group in displayGroups)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 8), // Add space before each entry
                 Text(
-                  '${entry.key}:',
+                  group['title'],
                   style: TextStyle(
-                    fontWeight: FontWeight.bold, // Make key bold
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 4), // Add spacing between key and value
-                Text('${entry.value}'),
-                SizedBox(height: 12), // Add spacing between entries
+                SizedBox(height: 10),
+                for (var field in group['fields'])
+                  if (patientData.containsKey(field))
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$field:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text('${patientData[field]}'),
+                        SizedBox(height: 12),
+                      ],
+                    ),
               ],
             ),
           ElevatedButton(
@@ -156,4 +218,3 @@ class PatientDataWidget extends StatelessWidget {
     );
   }
 }
-
