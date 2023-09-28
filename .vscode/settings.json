@@ -1,0 +1,11 @@
+{
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 500,
+    "dart.flutterGenerateLocalizationsOnSave": "all",
+    "dart.flutterHotReloadOnSave": "all",
+    "dart.hotReloadOnSave": "all",
+    "dart.previewHotReloadOnSaveWatcher": true,
+    "terminal.integrated.sendKeybindingsToShell": false,
+    "terminal.integrated.allowChords": false,
+    "workbench.settings.openDefaultKeybindings": false
+}

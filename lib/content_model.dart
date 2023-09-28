@@ -9,22 +9,25 @@ class UnbordingContent {
 
 List<UnbordingContent> contents = [
   UnbordingContent(
-      title: 'Nature a hobby',
-      image: 'images/Group6.svg',
-      discription: "Build your hobbies at the comfort"
-          "of your home "),
+      title: 'Bienvenue sur'
+      'Med Connect Pro',
+      image: 'images/Group.svg',
+      discription: "L'outil ultime pour les gynécologues et les professionnels de la santé. "
+     " Med Connect Pro est conçu pour simplifier" 
+      "la gestion de vos patients et améliorer votre pratique."),
+           
   UnbordingContent(
-      title: 'Fast Delevery',
-      image: 'images/Group6.svg',
+      title: 'Gérez les Dossiers Patients Facilement',
+      image: 'images/dossier.svg',
       discription:
-          "simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the "
-          "industry's standard dummy text ever since the 1500s, "
-          "when an unknown printer took a galley of type and scrambled it "),
+          "Stockez et accédez facilement aux dossiers patients, "
+          "à l'historique médical et aux plans de traitement. "
+          "Moins de temps passé sur la paperasse, plus de temps consacré à vos patients."),
   UnbordingContent(
-      title: 'Reward surprises',
-      image: 'images/Group6.svg',
+      title: 'Des Antécédents Médicaux Complets',
+      image: 'images/gynecologue.svg',
       discription:
-          "simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the "
-          "industry's standard dummy text ever since the 1500s, "
-          "when an unknown printer took a galley of type and scrambled it "),
+          "Accédez à des historiques médicaux détaillés et suivez l'évolution de vos  "
+          "patients dans le temps. Prenez des décisions éclairées pour une meilleure prise en charge des patients."
+       ),
 ];
