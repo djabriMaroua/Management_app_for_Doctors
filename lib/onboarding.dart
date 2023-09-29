@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mon_doctor/main.dart';
+import 'package:mon_doctor/pages/login_regester_page.dart';
 import 'content_model.dart';
 import 'home.dart';
 
@@ -46,13 +47,13 @@ class _OnbordingState extends State<Onbording> {
         width: double.infinity,
         child: TextButton(
           child: Text(
-              currentIndex == contents.length - 1 ? "Continue" : "Next"),
+              currentIndex == contents.length - 1 ? "Sign up" : "Next"),
           onPressed: () {
             if (currentIndex == contents.length - 1) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => HomeScreen(),
+                  builder: (_) => LoginPage(),
                 ),
               );
             }
