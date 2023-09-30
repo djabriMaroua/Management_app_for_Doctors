@@ -1,3 +1,7 @@
+import 'package:mon_doctor/main.dart';
+import 'package:onboarding/onboarding.dart';
+
+import 'onboarding.dart';
 import 'pages/home_page.dart';
 
 import 'pages/login_regester_page.dart';
@@ -19,9 +23,9 @@ class _WidgetTreeState extends State<WidgetTree> {
         stream: Auth().authStateChanges,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomePage();
+            return  HomeScreen();
           } else {
-            return  LoginPage();
+            return  Onbording();
           }
         });
   }

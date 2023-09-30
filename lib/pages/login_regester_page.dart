@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../main.dart';
 
+
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
 
@@ -17,6 +18,26 @@ class _LoginPageState extends State<LoginPage> {
   bool isLogin = true;
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+
+  // Method to check if the user is already authenticated
+  Future<void> checkAuthStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // User is already authenticated, navigate to HomeScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkAuthStatus(); // Check user authentication status when the widget is created.
+  }
 
   Future<void> signInWithEmailAndPassword() async {
     try {
@@ -34,25 +55,30 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         errorMessage = e.message;
       });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
     }
   }
 
   Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Auth().cretUserWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-    }
+  try {
+    await Auth().cretUserWithEmailAndPassword(
+      email: _controllerEmail.text,
+      password: _controllerPassword.text,
+    );
+    // After successful registration, navigate to the HomeScreen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(),
+      ),
+    );
+  } on FirebaseAuthException catch (e) {
+    setState(() {
+      errorMessage = e.message;
+    });
   }
+  print("Registration completed"); // Add this line for debugging
+}
+
 
   Widget _title() {
     return const Text('Firebase auth');
@@ -72,9 +98,6 @@ class _LoginPageState extends State<LoginPage> {
     return Text(errorMessage == '' ? '' : 'humm ? $errorMessage ');
   }
 
-   
-
-  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -90,8 +113,8 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        resizeToAvoidBottomInset: true, // Allow the content to resize when the keyboard appears
-        body: SingleChildScrollView( // Wrap the content in a SingleChildScrollView
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
           child: _page(),
         ),
       ),
@@ -164,10 +187,10 @@ class _LoginPageState extends State<LoginPage> {
     return ElevatedButton(
       onPressed: isLogin
           ? () {
-              signInWithEmailAndPassword(); // Call your function here
+              signInWithEmailAndPassword();
             }
           : () {
-              createUserWithEmailAndPassword(); // Call your function here
+              createUserWithEmailAndPassword();
             },
       child: SizedBox(
         width: double.infinity,
@@ -195,15 +218,8 @@ class _LoginPageState extends State<LoginPage> {
       },
       child: Text(
         isLogin ? 'Register instead' : 'Login instead',
-        style: TextStyle(color: Colors.white), // Set the text color to white
+        style: TextStyle(color: Colors.white),
       ),
     );
   }
-
- 
 }
-
-
-
-
-

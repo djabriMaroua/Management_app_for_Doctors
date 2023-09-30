@@ -1,20 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:mon_doctor/home.dart';
 import 'package:mon_doctor/pages/login_regester_page.dart';
 import 'package:mon_doctor/searchPatient.dart';
+import 'package:mon_doctor/wedget_tree.dart';
 
 import 'Examengynecologique.dart';
 import 'PatientInformationPage.dart';
 
 import 'TABLE.dart';
+import 'auth.dart';
 import 'onboarding.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
+  //FirebaseAuth.instance.setPersistence(Persistence.LOCAL); // Set persistence
+ 
   runApp(const MyApp());
 }
 
@@ -35,7 +40,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: Colors.purple,
       ),
-      home: Onbording(),
+      home:WidgetTree() ,
     );
   }
 }

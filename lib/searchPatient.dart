@@ -92,18 +92,19 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
             )
           else if (_patientData != null)
             PatientDataWidget(
-              
-              patientData: _patientData!,
-              onEditPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        TablePage(patientId: _docIdController.text),
-                  ),
-                );
-              },
-            ),
+  patientData: _patientData!,
+  onEditPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TablePage(patientId: _docIdController.text),
+      ),
+    );
+  },
+  parentDocumentId: _docIdController.text, // Pass the parent document ID
+  subcollectionName: 'updates', // Replace with your subcollection name
+)
+
         ],
       ),
     );
@@ -111,12 +112,16 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
 }
 
 class PatientDataWidget extends StatelessWidget {
-  final Map<String, dynamic> patientData;
+ final Map<String, dynamic> patientData;
   final VoidCallback onEditPressed;
+  final String parentDocumentId;
+  final String subcollectionName;
 
   PatientDataWidget({
     required this.patientData,
     required this.onEditPressed,
+    required this.parentDocumentId,
+    required this.subcollectionName,
   });
 
   // Define a function to create a spaced Text widget
