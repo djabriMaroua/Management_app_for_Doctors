@@ -126,8 +126,6 @@ class _TablePageState extends State<TablePage> {
                       .toList(),
                   decoration: InputDecoration(labelText: 'GPCA'),
                 ),
-
-              // Dynamic Fields: G
               Column(
                 children: gFields.map((gField) {
                   return Column(
@@ -169,7 +167,7 @@ class _TablePageState extends State<TablePage> {
                   );
                 }).toList(),
               ),
-
+              
               SizedBox(height: 16),
               TextFormField(
                 onChanged: (value) {

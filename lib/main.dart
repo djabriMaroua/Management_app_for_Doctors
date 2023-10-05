@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mon_doctor/home.dart';
 import 'package:mon_doctor/pages/login_regester_page.dart';
+import 'package:mon_doctor/recherche_teacher.dart';
 import 'package:mon_doctor/searchPatient.dart';
 import 'package:mon_doctor/wedget_tree.dart';
 
@@ -13,11 +14,16 @@ import 'PatientInformationPage.dart';
 
 import 'TABLE.dart';
 import 'auth.dart';
+import 'chat.dart';
+import 'inspect.dart';
 import 'onboarding.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      
+  
+  );
   //FirebaseAuth.instance.setPersistence(Persistence.LOCAL); // Set persistence
  
   runApp(const MyApp());
@@ -40,7 +46,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: Colors.purple,
       ),
-      home:WidgetTree() ,
+      home:chatpage(email: '',) ,
     );
   }
 }

@@ -246,7 +246,63 @@ class PatientDataWidget extends StatelessWidget {
           spacedText('Groupe Sanguin:', patientData['groupeSanguin'] ?? 'N/A'),
           spacedText('FNS:', patientData['fns'] ?? 'N/A'),
           
-          
+  StreamBuilder<QuerySnapshot>(
+  stream: FirebaseFirestore.instance
+      .collection('patients')
+      .doc(parentDocumentId)
+      .collection(subcollectionName)
+      .snapshots(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return CircularProgressIndicator();
+    } else if (snapshot.hasError) {
+      return Text('Error: ${snapshot.error}');
+    } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Subcollection Title:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text('No data available'),
+        ],
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Subcollection Title:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          for (var index = 0; index < snapshot.data!.docs.length; index++)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'La visite ${index + 1}', // Generate the title based on the index
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                // Display other subcollection fields as needed
+                 Text('Nom: ${snapshot.data!.docs[index]['nom']}'),
+                 SizedBox(height: 12),
+              ],
+            ),
+        ],
+      );
+    }
+  },
+),
+
             Padding(
           padding: const EdgeInsets.symmetric(
          vertical: 4.0,
