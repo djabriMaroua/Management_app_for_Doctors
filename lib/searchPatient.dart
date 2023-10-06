@@ -293,8 +293,101 @@ class PatientDataWidget extends StatelessWidget {
                   ),
                 ),
                 // Display other subcollection fields as needed
-                 Text('Nom: ${snapshot.data!.docs[index]['nom']}'),
-                 SizedBox(height: 12),
+                  Text('Personal Information:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('Nom:', patientData['nom'] ?? 'N/A'),
+          spacedText('Prenom:', patientData['prenom'] ?? 'N/A'),
+          spacedText(
+              'Date de Naissance:', patientData['dateNaissance'] ?? 'N/A'),
+          spacedText('Adresse:', patientData['adresse'] ?? 'N/A'),
+          spacedText(
+              'Numéro de Téléphone:', patientData['numeroTelephone'] ?? 'N/A'),
+
+          //Observation à l'entrée
+          Text('Observation à l\'entrée:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('Motif de Consultation:',
+              patientData['motifConsultation'] ?? 'N/A'),
+
+          //     // Antécédent
+
+          Text('Antécédent:', style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('Menarchie:', patientData['menarchie'] ?? 'N/A'),
+          spacedText('Durée des règles:', patientData['dureed'] ?? 'N/A'),
+          spacedText('Âge au Mariage:', patientData['ageMariage'] ?? 'N/A'),
+          spacedText(
+              'Caractère du Cycle:', patientData['caractereCycle'] ?? 'N/A'),
+          // Caractère du Cycle
+          Text('contraception:', style: TextStyle(fontWeight: FontWeight.bold)),
+          if (patientData['contraception'] != null &&
+              patientData['contraception'] is List)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: patientData['contraception'].map<Widget>((cycleItem) {
+                return Text(cycleItem.toString());
+              }).toList(),
+            ),
+
+          // Obstétricaux
+          Text('Obstétricaux:', style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('G_AUB_G1:', patientData['G_AUB_G1'] ?? 'N/A'),
+          spacedText('G_PN_G1:', patientData['G_PN_G1'] ?? 'N/A'),
+          spacedText('G_E_G1:', patientData['G_E_G1'] ?? 'N/A'),
+          spacedText('G_AUB_G2:', patientData['G_AUB_G2'] ?? 'N/A'),
+          spacedText('G_PN_G2:', patientData['G_PN_G2'] ?? 'N/A'),
+          spacedText('G_E_G2:', patientData['G_E_G2'] ?? 'N/A'),
+          spacedText('G_AUB_G3:', patientData['G_AUB_G3'] ?? 'N/A'),
+          spacedText('G_PN_G3:', patientData['G_PN_G3'] ?? 'N/A'),
+          spacedText('G_E_G3:', patientData['G_E_G3'] ?? 'N/A'),
+          spacedText('G_AUB_G4:', patientData['G_AUB_G4'] ?? 'N/A'),
+          spacedText('G_PN_G4:', patientData['G_PN_G4'] ?? 'N/A'),
+          spacedText('G_E_G4:', patientData['G_E_G4'] ?? 'N/A'),
+          spacedText('G_AUB_G5:', patientData['G_AUB_G5'] ?? 'N/A'),
+          spacedText('G_PN_G5:', patientData['G_PN_G5'] ?? 'N/A'),
+          spacedText('G_E_G5:', patientData['G_E_G5'] ?? 'N/A'),
+          spacedText('G_AUB_G6:', patientData['G_AUB_G6'] ?? 'N/A'),
+          spacedText('G_PN_G6:', patientData['G_PN_G6'] ?? 'N/A'),
+          spacedText('G_E_G6:', patientData['G_E_G6'] ?? 'N/A'),
+          spacedText('G_AUB_G7:', patientData['G_AUB_G7'] ?? 'N/A'),
+          spacedText('G_PN_G7:', patientData['G_PN_G7'] ?? 'N/A'),
+          spacedText('G_E_G7:', patientData['G_E_G7'] ?? 'N/A'),
+
+          // Pathologie
+          Text('Pathologie:', style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('Pathologie:', patientData['pathologie'] ?? 'N/A'),
+
+          // Familiaux
+          Text('Familiaux:', style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('Paternelle:', patientData['paternelle'] ?? 'N/A'),
+          spacedText('Maternelle:', patientData['maternelle'] ?? 'N/A'),
+          spacedText('Autre:', patientData['autre'] ?? 'N/A'),
+
+          // Examen Générale
+          Text('Examen Générale:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('Poids:', patientData['poids'] ?? 'N/A'),
+          spacedText('Taille:', patientData['taille'] ?? 'N/A'),
+          spacedText('Pouls:', patientData['pouls'] ?? 'N/A'),
+          // Continue for TA, oedemes, labstix, particularites
+
+          // Examen obstétricale
+          Text('Examen obstétricale:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('HU:', patientData['hu'] ?? 'N/A'),
+          spacedText('Contraction Uterine:',
+              patientData['contractionUterine'] ?? 'N/A'),
+          spacedText('Presentation:', patientData['presentation'] ?? 'N/A'),
+          // Continue for bcf, uterus, speculum, toucherVaginal
+
+          // Examen complémentaire
+          Text('Examen complémentaire:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          spacedText('Examen complémentaire:',
+              patientData['Examen complémentaire'] ?? 'N/A'),
+          spacedText('Groupe Sanguin:', patientData['groupeSanguin'] ?? 'N/A'),
+          spacedText('FNS:', patientData['fns'] ?? 'N/A'),
+                 
+
               ],
             ),
         ],

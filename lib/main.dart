@@ -15,17 +15,15 @@ import 'PatientInformationPage.dart';
 import 'TABLE.dart';
 import 'auth.dart';
 import 'chat.dart';
+import 'examen_gyne.dart';
 import 'inspect.dart';
 import 'onboarding.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      
-  
-  );
+  await Firebase.initializeApp();
   //FirebaseAuth.instance.setPersistence(Persistence.LOCAL); // Set persistence
- 
+
   runApp(const MyApp());
 }
 
@@ -46,7 +44,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: Colors.purple,
       ),
-      home:chatpage(email: '',) ,
+      home: WidgetTree( )
     );
   }
 }
@@ -72,6 +70,8 @@ class _HomeScreenState extends State<HomeScreen>
         return SearchPatientPage();
       } else if (pageName == 'table') {
         return gynecologique();
+      } else if (pageName == 'exam3') {
+        return SearchPatientPage();
       }
       // Return a default page or handle unknown page names as needed
       return Container();
@@ -128,14 +128,14 @@ class _HomeScreenState extends State<HomeScreen>
                   mainAxisSpacing: 40,
                   crossAxisSpacing: 30,
                   children: [
-                    itemDashboard('Examen obstétricale n',
+                    itemDashboard('Examen obstétricale ',
                         'images/enceinte.svg', Colors.deepPurple, 'exam'),
-                    itemDashboard('Examen obstétricale a', 'images/mere.svg',
+                    itemDashboard('controle obstétricale ', 'images/mere.svg',
                         Colors.deepPurple, 'exam2'),
-                    itemDashboard('Examen gyneco a', 'images/gyneco.svg',
+                    itemDashboard('Examen gyneco ', 'images/gyneco.svg',
                         Colors.deepPurple, 'table'),
-                    itemDashboard('Examen gyneco n ', 'images/visite.svg',
-                        Colors.deepPurple, 'table'),
+                    itemDashboard('controle gyneco  ', 'images/visite.svg',
+                        Colors.deepPurple, 'exam3'),
 
                     // Add more items here with different SVG asset paths
                   ],

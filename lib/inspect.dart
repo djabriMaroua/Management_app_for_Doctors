@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-  
-
- 
-
 class MyForm extends StatefulWidget {
   @override
   _MyFormState createState() => _MyFormState();
@@ -22,6 +18,7 @@ class _MyFormState extends State<MyForm> {
   TextEditingController anneeDiplomeController = TextEditingController();
   TextEditingController gradeController = TextEditingController();
   TextEditingController dateDerniereVisiteController = TextEditingController();
+  TextEditingController notelastController = TextEditingController();
   List<TimeSlot> emploiDuTemps = [];
 
   void saveDataToFirestore() async {
@@ -37,6 +34,7 @@ class _MyFormState extends State<MyForm> {
         'annee_diplome': anneeDiplomeController.text,
         'grade': gradeController.text,
         'date_derniere_visite': dateDerniereVisiteController.text,
+        'notelast': notelastController.text,
         'emploi_du_temps': emploiDuTemps.map((slot) {
           return {
             'heure_debut': slot.heureDebut,
@@ -57,6 +55,7 @@ class _MyFormState extends State<MyForm> {
       anneeDiplomeController.clear();
       gradeController.clear();
       dateDerniereVisiteController.clear();
+      notelastController.clear();
       setState(() {
         emploiDuTemps.clear();
       });
@@ -106,7 +105,8 @@ class _MyFormState extends State<MyForm> {
               ),
               TextField(
                 controller: lieuNaissanceController,
-                decoration: InputDecoration(labelText: 'Lieu de naissance'),
+                decoration:
+                    InputDecoration(labelText: 'date et Lieu de naissance'),
               ),
               TextField(
                 controller: diplomeController,
@@ -114,7 +114,8 @@ class _MyFormState extends State<MyForm> {
               ),
               TextField(
                 controller: anneeDiplomeController,
-                decoration: InputDecoration(labelText: 'Année d\'obtention du diplôme'),
+                decoration:
+                    InputDecoration(labelText: 'Année d\'obtention du diplôme'),
               ),
               TextField(
                 controller: gradeController,
@@ -122,7 +123,8 @@ class _MyFormState extends State<MyForm> {
               ),
               TextField(
                 controller: dateDerniereVisiteController,
-                decoration: InputDecoration(labelText: 'Date de la dernière visite'),
+                decoration:
+                    InputDecoration(labelText: 'Date de la dernière visite'),
                 onTap: () async {
                   DateTime? selectedDate = await showDatePicker(
                     context: context,
@@ -132,9 +134,14 @@ class _MyFormState extends State<MyForm> {
                   );
 
                   if (selectedDate != null) {
-                    dateDerniereVisiteController.text = selectedDate.toLocal().toString().split(' ')[0];
+                    dateDerniereVisiteController.text =
+                        selectedDate.toLocal().toString().split(' ')[0];
                   }
                 },
+              ),
+               TextField(
+                controller:notelastController,
+                decoration: InputDecoration(labelText: 'Dernière note d\'inspection'),
               ),
               SizedBox(height: 20),
               Text('Emploi du Temps:'),
@@ -148,7 +155,7 @@ class _MyFormState extends State<MyForm> {
                           setState(() {
                             emploiDuTemps.add(timeSlot);
                           });
-                        //  Navigator.of(context).pop();
+                          //  Navigator.of(context).pop();
                         },
                       );
                     },
@@ -163,8 +170,10 @@ class _MyFormState extends State<MyForm> {
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     title: Text('Créneau ${index + 1}'),
-                    subtitle: Text('De ${emploiDuTemps[index].heureDebut} à ${emploiDuTemps[index].heureFin}'),
-                    trailing: Text('Jour: ${emploiDuTemps[index].jour}, Classe: ${emploiDuTemps[index].classeEnseignee}'),
+                    subtitle: Text(
+                        'De ${emploiDuTemps[index].heureDebut} à ${emploiDuTemps[index].heureFin}'),
+                    trailing: Text(
+                        'Jour: ${emploiDuTemps[index].jour}, Classe: ${emploiDuTemps[index].classeEnseignee}'),
                   );
                 },
               ),
@@ -188,7 +197,11 @@ class TimeSlot {
   String jour;
   String classeEnseignee;
 
-  TimeSlot({required this.heureDebut, required this.heureFin, required this.jour, required this.classeEnseignee});
+  TimeSlot(
+      {required this.heureDebut,
+      required this.heureFin,
+      required this.jour,
+      required this.classeEnseignee});
 }
 
 class TimeSlotDialog extends StatefulWidget {
@@ -246,8 +259,15 @@ class _TimeSlotDialogState extends State<TimeSlotDialog> {
             String jour = jourController.text;
             String classeEnseignee = classeEnseigneeController.text;
 
-            if (heureDebut.isNotEmpty && heureFin.isNotEmpty && jour.isNotEmpty && classeEnseignee.isNotEmpty) {
-              TimeSlot timeSlot = TimeSlot(heureDebut: heureDebut, heureFin: heureFin, jour: jour, classeEnseignee: classeEnseignee);
+            if (heureDebut.isNotEmpty &&
+                heureFin.isNotEmpty &&
+                jour.isNotEmpty &&
+                classeEnseignee.isNotEmpty) {
+              TimeSlot timeSlot = TimeSlot(
+                  heureDebut: heureDebut,
+                  heureFin: heureFin,
+                  jour: jour,
+                  classeEnseignee: classeEnseignee);
               widget.onTimeSlotAdded(timeSlot);
             }
 
