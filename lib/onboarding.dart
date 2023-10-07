@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mon_doctor/main.dart';
-import 'package:mon_doctor/pages/login_regester_page.dart';
+import 'main.dart';
+import 'pages/login_regester_page.dart';
 import 'content_model.dart';
 import 'home.dart';
 

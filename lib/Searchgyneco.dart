@@ -21,7 +21,7 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
     });
 
     FirebaseFirestore.instance
-        .collection('gynecologique')
+        .collection('gyne')
         .doc(docId)
         .get()
         .then((DocumentSnapshot documentSnapshot) {
@@ -48,7 +48,8 @@ class _SearchPatientPageState extends State<SearchPatientPage> {
   }
 
   // Function to create spaced Text widgets
-  Widget spacedText(String label, String value) {
+  Widget spacedText(String label, String value) 
+  {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(

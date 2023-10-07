@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
- 
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ExamenEntre extends StatefulWidget {
   final String patientId; // Declare the patientId variable as a parameter
@@ -12,8 +17,31 @@ class ExamenEntre extends StatefulWidget {
 }
 
 class _ExamenEntreState extends State<ExamenEntre> {
-  String get patientId => widget.patientId; // Access patientId using the getter
+  
 
+  String get patientId => widget.patientId; // Access patientId using the getter
+Future<void> pickPDF() async {
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+    if (result != null) {
+      setState(() {
+        pdfFilePath = result.files.single.path;
+      });
+    }
+  }
+
+  // Function to pick an image file
+  
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        imageFilePath = pickedFile.path;
+      });
+    }
+  }
   // Retrieve the existing data from Firestore
   Future<void> updateDataInFirestore(
       Map<String, dynamic> newData, String documentId) async {
@@ -43,6 +71,76 @@ class _ExamenEntreState extends State<ExamenEntre> {
       print('Error updating data in Firestore: $error');
     }
   }
+String? pdfFilePath;
+  String? imageFilePath;
+  String? pdfDownloadURL;
+  String? imageDownloadURL;
+
+  // Function to upload PDF file to Firebase Storage
+  Future<void> uploadPDF() async {
+    if (pdfFilePath == null) return;
+
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child('pdfs/${widget.patientId}.pdf');
+
+    try {
+      final UploadTask uploadTask =
+          storageReference.putFile(File(pdfFilePath!));
+
+      await uploadTask.whenComplete(() async {
+        pdfDownloadURL = await storageReference.getDownloadURL();
+        print('PDF file uploaded and URL obtained: $pdfDownloadURL');
+      });
+    } catch (error) {
+      print('Error uploading PDF: $error');
+    }
+  }
+
+  // Function to upload image file to Firebase Storage
+  Future<void> uploadImage() async {
+    if (imageFilePath == null) return;
+
+    final Reference storageReference =
+        FirebaseStorage.instance.ref().child('images/${widget.patientId}.jpg');
+
+    try {
+      final UploadTask uploadTask =
+          storageReference.putFile(File(imageFilePath!));
+
+      await uploadTask.whenComplete(() async {
+        imageDownloadURL = await storageReference.getDownloadURL();
+        print('Image uploaded and URL obtained: $imageDownloadURL');
+      });
+    } catch (error) {
+      print('Error uploading image: $error');
+    }
+  }
+
+  // Function to update Firestore with PDF and image URLs
+  Future<void> updateFirestoreWithAttachments(String documentId) async {
+    try {
+      await uploadPDF();
+      await uploadImage();
+
+      if (pdfDownloadURL != null && imageDownloadURL != null) {
+        Map<String, dynamic> newData = {
+          'pdfUrl': pdfDownloadURL,
+          'imageUrl': imageDownloadURL,
+          // Include any other data you want to update in the Firestore document
+        };
+
+        await FirebaseFirestore.instance
+            .collection('patients').doc(documentId);
+
+        print('Data updated in Firestore for document ${widget.patientId}');
+      }
+    } catch (error) {
+      print('Error updating Firestore with attachments: $error');
+    }
+  }
+
+  // Function to pick an image file
+   
 
   Map<String, dynamic> patientData = {};
   // Create TextEditingController for each field
@@ -90,59 +188,48 @@ class _ExamenEntreState extends State<ExamenEntre> {
   TextEditingController membreController = TextEditingController();
   TextEditingController annexesController = TextEditingController();
   TextEditingController conclusionController = TextEditingController();
-  TextEditingController nombreDeFetusEchoDeuxiemeController =
+
+  TextEditingController presentationEchoDeuxiemeController =
       TextEditingController();
   TextEditingController activiteCardiaqueEchoDeuxiemeController =
       TextEditingController();
-  TextEditingController frequenceCardiaqueEchoDeuxiemeController =
+  TextEditingController mouvementactiffoeteuxEchoDeuxiemeController =
       TextEditingController();
-  TextEditingController mobiliteEchoDeuxiemeController =
-      TextEditingController();
-  TextEditingController longueurCranioCaudaleEchoDeuxiemeController =
-      TextEditingController();
+  TextEditingController LCCController = TextEditingController();
+  TextEditingController SGController = TextEditingController();
   TextEditingController bipEchoDeuxiemeController = TextEditingController();
-  TextEditingController perimetreCranienEchoDeuxiemeController =
-      TextEditingController();
-  TextEditingController perimetreAbdominaleEchoDeuxiemeController =
-      TextEditingController();
-  TextEditingController clarteNucaleEchoDeuxiemeController =
-      TextEditingController();
-  TextEditingController datEchoDeuxiemeController = TextEditingController();
-  TextEditingController poleCephaliqueEchoDeuxiemeController =
-      TextEditingController();
-  TextEditingController abdomenEchoDeuxiemeController = TextEditingController();
-  TextEditingController membreEchoDeuxiemeController = TextEditingController();
-  TextEditingController annexesEchoDeuxiemeController = TextEditingController();
+  TextEditingController DATController = TextEditingController();
+  TextEditingController LFController = TextEditingController();
+  TextEditingController RACHISController = TextEditingController();
+  TextEditingController ESTOMACController = TextEditingController();
+  TextEditingController VITESSEController = TextEditingController();
+  TextEditingController REINSController = TextEditingController();
+  TextEditingController RESTController = TextEditingController();
+  TextEditingController LIQUIDEAMINIOTIQUEController = TextEditingController();
+  TextEditingController PLACENTAController = TextEditingController();
   TextEditingController conclusionEchoDeuxiemeController =
       TextEditingController();
 
   // Create TextEditingController for Écho du troisième trimestre fields
-  TextEditingController nombreDeFetusEchoTroisiemeController =
+   TextEditingController presentationEchoDeuxieme3Controller =
       TextEditingController();
-  TextEditingController activiteCardiaqueEchoTroisiemeController =
+  TextEditingController activiteCardiaqueEchoDeuxieme3Controller =
       TextEditingController();
-  TextEditingController frequenceCardiaqueEchoTroisiemeController =
+  TextEditingController mouvementactiffoeteuxEchoDeuxieme3Controller =
       TextEditingController();
-  TextEditingController mobiliteEchoTroisiemeController =
-      TextEditingController();
-  TextEditingController longueurCranioCaudaleEchoTroisiemeController =
-      TextEditingController();
-  TextEditingController bipEchoTroisiemeController = TextEditingController();
-  TextEditingController perimetreCranienEchoTroisiemeController =
-      TextEditingController();
-  TextEditingController perimetreAbdominaleEchoTroisiemeController =
-      TextEditingController();
-  TextEditingController clarteNucaleEchoTroisiemeController =
-      TextEditingController();
-  TextEditingController datEchoTroisiemeController = TextEditingController();
-  TextEditingController poleCephaliqueEchoTroisiemeController =
-      TextEditingController();
-  TextEditingController abdomenEchoTroisiemeController =
-      TextEditingController();
-  TextEditingController membreEchoTroisiemeController = TextEditingController();
-  TextEditingController annexesEchoTroisiemeController =
-      TextEditingController();
-  TextEditingController conclusionEchoTroisiemeController =
+  TextEditingController LCC3Controller = TextEditingController();
+  TextEditingController SG3Controller = TextEditingController();
+  TextEditingController bip3EchoDeuxiemeController = TextEditingController();
+  TextEditingController DAT3Controller = TextEditingController();
+  TextEditingController LF3Controller = TextEditingController();
+  TextEditingController RACHIS3Controller = TextEditingController();
+  TextEditingController ESTOMAC3Controller = TextEditingController();
+  TextEditingController VITESSE3Controller = TextEditingController();
+  TextEditingController REINS3Controller = TextEditingController();
+  TextEditingController REST3Controller = TextEditingController();
+  TextEditingController LIQUIDEAMINIOTIQUE3Controller = TextEditingController();
+  TextEditingController PLACENTA3Controller = TextEditingController();
+  TextEditingController conclusionEchoDeuxieme3Controller =
       TextEditingController();
 
   String? contractionUterineValue;
@@ -609,13 +696,13 @@ class _ExamenEntreState extends State<ExamenEntre> {
             ),
             SizedBox(height: 8),
             TextField(
-              controller: nombreDeFetusEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Nombre de fœtus'),
+              controller: presentationController,
+              decoration: InputDecoration(labelText: 'Presenation'),
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 10),
             Text(
-              'Vitalité',
+              'Activité cardiaque',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
@@ -623,76 +710,82 @@ class _ExamenEntreState extends State<ExamenEntre> {
               decoration: InputDecoration(labelText: 'Activité cardiaque'),
             ),
             TextField(
-              controller: frequenceCardiaqueEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Fréquence cardiaque'),
+              controller: mouvementactiffoeteuxEchoDeuxiemeController,
+              decoration: InputDecoration(labelText: 'mouvement actif foeteux'),
             ),
-            TextField(
-              controller: mobiliteEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Mobilité'),
-            ),
-
-            SizedBox(height: 10),
+             SizedBox(height: 10),
             Text(
               'Biometrie',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: longueurCranioCaudaleEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Longueur cranio-caudale'),
+              controller: LCCController,
+              decoration: InputDecoration(labelText: 'LCC'),
+            ),
+
+          
+            TextField(
+              controller: SGController,
+              decoration: InputDecoration(labelText: 'SG'),
             ),
             TextField(
               controller: bipEchoDeuxiemeController,
               decoration: InputDecoration(labelText: 'BIP'),
             ),
             TextField(
-              controller: perimetreCranienEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Périmètre crânien'),
-            ),
-            TextField(
-              controller: perimetreAbdominaleEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Périmètre abdominal'),
-            ),
-            TextField(
-              controller: clarteNucaleEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Clarté nucale'),
-            ),
-            TextField(
-              controller: datEchoDeuxiemeController,
+              controller: DATController,
               decoration: InputDecoration(labelText: 'DAT'),
             ),
-
-            SizedBox(height: 10),
+            TextField(
+              controller: LFController,
+              decoration: InputDecoration(labelText: 'LF'),
+            ),
+             SizedBox(height: 10),
             Text(
-              'Morphologie',
+              'Morphogramme',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: poleCephaliqueEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Pôle céphalique'),
+              controller:  RACHISController,
+              decoration: InputDecoration(labelText: 'Rachis'),
             ),
             TextField(
-              controller: abdomenEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Abdomen'),
+              controller: ESTOMACController,
+              decoration: InputDecoration(labelText: 'Estomac'),
+            ),
+
+            
+            TextField(
+              controller: VITESSEController,
+              decoration: InputDecoration(labelText: 'Vitesse'),
             ),
             TextField(
-              controller: membreEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Membre'),
+              controller:  REINSController,
+              decoration: InputDecoration(labelText: 'Reins'),
+            ),
+            TextField(
+              controller: RESTController,
+              decoration: InputDecoration(labelText: 'Reste'),
             ),
 
             SizedBox(height: 10),
             Text(
-              'Annexes',
+              'Liquide aminiotique',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: annexesEchoDeuxiemeController,
-              decoration: InputDecoration(labelText: 'Annexes'),
+              controller: LIQUIDEAMINIOTIQUEController,
+              decoration: InputDecoration(labelText: ''),
             ),
 
             SizedBox(height: 10),
             Text(
-              'Conclusion',
+              'Placeinta',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextField(
+              controller: PLACENTAController,
+              decoration: InputDecoration(labelText: 'Placeinta'),
             ),
             TextField(
               controller: conclusionEchoDeuxiemeController,
@@ -706,99 +799,129 @@ class _ExamenEntreState extends State<ExamenEntre> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
+           SizedBox(height: 8),
             TextField(
-              controller: nombreDeFetusEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Nombre de fœtus'),
+              controller: presentationEchoDeuxieme3Controller,
+              decoration: InputDecoration(labelText: 'Presenation'),
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 10),
             Text(
-              'Vitalité',
+              'Activité cardiaque',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: activiteCardiaqueEchoTroisiemeController,
+              controller: activiteCardiaqueEchoDeuxieme3Controller,
               decoration: InputDecoration(labelText: 'Activité cardiaque'),
             ),
             TextField(
-              controller: frequenceCardiaqueEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Fréquence cardiaque'),
+              controller: mouvementactiffoeteuxEchoDeuxieme3Controller,
+              decoration: InputDecoration(labelText: 'mouvement actif foeteux'),
             ),
-            TextField(
-              controller: mobiliteEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Mobilité'),
-            ),
-
-            SizedBox(height: 10),
+             SizedBox(height: 10),
             Text(
               'Biometrie',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: longueurCranioCaudaleEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Longueur cranio-caudale'),
+              controller: LCC3Controller,
+              decoration: InputDecoration(labelText: 'LCC'),
+            ),
+
+          
+            TextField(
+              controller: SG3Controller,
+              decoration: InputDecoration(labelText: 'SG'),
             ),
             TextField(
-              controller: bipController,
+              controller: bip3EchoDeuxiemeController,
               decoration: InputDecoration(labelText: 'BIP'),
             ),
             TextField(
-              controller: perimetreCranienEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Périmètre crânien'),
-            ),
-            TextField(
-              controller: perimetreAbdominaleEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Périmètre abdominal'),
-            ),
-            TextField(
-              controller: clarteNucaleEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Clarté nucale'),
-            ),
-            TextField(
-              controller: datEchoTroisiemeController,
+              controller: DAT3Controller,
               decoration: InputDecoration(labelText: 'DAT'),
             ),
-
-            SizedBox(height: 10),
+            TextField(
+              controller: LF3Controller,
+              decoration: InputDecoration(labelText: 'LF'),
+            ),
+             SizedBox(height: 10),
             Text(
-              'Morphologie',
+              'Morphogramme',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: poleCephaliqueEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Pôle céphalique'),
+              controller:  RACHIS3Controller,
+              decoration: InputDecoration(labelText: 'Rachis'),
             ),
             TextField(
-              controller: abdomenEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Abdomen'),
+              controller: ESTOMAC3Controller,
+              decoration: InputDecoration(labelText: 'Estomac'),
+            ),
+
+            
+            TextField(
+              controller: VITESSE3Controller,
+              decoration: InputDecoration(labelText: 'Vitesse'),
             ),
             TextField(
-              controller: membreEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Membre'),
+              controller:  REINS3Controller,
+              decoration: InputDecoration(labelText: 'Reins'),
+            ),
+            TextField(
+              controller: REST3Controller,
+              decoration: InputDecoration(labelText: 'Reste'),
             ),
 
             SizedBox(height: 10),
             Text(
-              'Annexes',
+              'Liquide aminiotique',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: annexesEchoTroisiemeController,
-              decoration: InputDecoration(labelText: 'Annexes'),
+              controller: LIQUIDEAMINIOTIQUE3Controller,
+              decoration: InputDecoration(labelText: ''),
             ),
 
             SizedBox(height: 10),
             Text(
-              'Conclusion',
+              'Placeinta',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
-              controller: conclusionEchoTroisiemeController,
+              controller: PLACENTA3Controller,
+              decoration: InputDecoration(labelText: 'Placeinta'),
+            ),
+            TextField(
+              controller: conclusionEchoDeuxieme3Controller,
               decoration: InputDecoration(labelText: 'Conclusion'),
             ),
 
             SizedBox(height: 20),
+
+
             SizedBox(height: 20),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => pickPDF(),
+              child: Text('Pick PDF'),
+            ),
+
+            // Button to pick an image
+            ElevatedButton(
+              onPressed: () => pickImage(),
+              child: Text('Pick Image'),
+            ),
+
+            // Button to upload PDF and image to Firestore
+            ElevatedButton(
+              onPressed: () => updateFirestoreWithAttachments(patientId),
+              child: Text('Upload PDF and Image'),
+            ),
+          
+       
+       
+
             ElevatedButton(
               onPressed: () {
                 // Update the patientData map with the information from this page
@@ -854,35 +977,68 @@ class _ExamenEntreState extends State<ExamenEntre> {
                 patientData['conclusion'] = conclusionController.text;
 
 //                   //////////////////////////////////////////////:
-                patientData['nombreDeFetusEchoDeuxieme '] =
-                    nombreDeFetusEchoDeuxiemeController.text;
+                patientData['presenationEchoDeuxieme '] =
+                    presentationEchoDeuxiemeController.text;
                 patientData['activiteCardiaqueEchoDeuxieme'] =
                     activiteCardiaqueEchoDeuxiemeController.text;
-                patientData['frequenceCardiaqueEchoDeuxieme'] =
-                    frequenceCardiaqueEchoDeuxiemeController.text;
-                patientData['mobiliteEchoDeuxieme'] =
-                    mobiliteEchoDeuxiemeController.text;
-                patientData['longueurCranioCaudaleEchoDeuxieme'] =
-                    longueurCranioCaudaleEchoDeuxiemeController.text;
+                patientData['mouvementactiffoeteuxEchoDeuxieme'] =
+                    mouvementactiffoeteuxEchoDeuxiemeController.text;
+                patientData['LCC'] =
+                    LCCController.text;
+                patientData['SGEchoDeuxieme'] =
+                    SGController.text;
                 patientData['bipEchoDeuxieme'] = bipEchoDeuxiemeController.text;
-                patientData['perimetreCranienEchoDeuxieme'] =
-                    perimetreCranienEchoDeuxiemeController.text;
-                patientData['perimetreAbdominaleEchoDeuxieme'] =
-                    perimetreAbdominaleEchoDeuxiemeController.text;
-                patientData['clarteNucaleEchoDeuxieme'] =
-                    clarteNucaleEchoDeuxiemeController.text;
-                patientData['datEchoDeuxieme'] = datEchoDeuxiemeController.text;
-                patientData['poleCephaliqueEchoDeuxieme'] =
-                    poleCephaliqueEchoDeuxiemeController.text;
-                patientData['abdomenEchoDeuxieme'] =
-                    abdomenEchoDeuxiemeController.text;
-                patientData['membreEchoDeuxieme'] =
-                    membreEchoDeuxiemeController.text;
-                patientData['annexesEchoDeuxieme'] =
-                    annexesEchoDeuxiemeController.text;
+                patientData['DATEchoDeuxieme'] =
+                    DATController.text;
+                patientData['LFEchoDeuxieme'] =
+                    LFController.text;
+                patientData['RACHISEchoDeuxieme'] =
+                    RACHISController.text;
+                patientData['ESTOMACEchoDeuxieme'] = ESTOMACController.text;
+                patientData['VITESSEchoDeuxieme'] =
+                    VITESSEController.text;
+                patientData['REINSEchoDeuxieme'] =
+                    REINSController.text;
+                patientData['ResteEchoDeuxieme'] =
+                    RESTController.text;
+                patientData['liquideaminiotiqueEchoDeuxieme'] =
+                    LIQUIDEAMINIOTIQUEController.text;
+                             patientData['PLACEINTAEchoDeuxieme'] =
+                    PLACENTAController.text;
                 patientData['conclusionEchoDeuxieme'] =
                     conclusionEchoDeuxiemeController.text;
 // ////////////////////////////////////////////
+//                   //////////////////////////////////////////////:
+                patientData['presenationEchoDeuxieme3 '] =
+                    presentationEchoDeuxieme3Controller.text;
+                patientData['activiteCardiaqueEchoDeuxieme3'] =
+                    activiteCardiaqueEchoDeuxieme3Controller.text;
+                patientData['mouvementactiffoeteuxEchoDeuxieme3'] =
+                    mouvementactiffoeteuxEchoDeuxieme3Controller.text;
+                patientData['LCC3'] =
+                    LCC3Controller.text;
+                patientData['SGEchoDeuxieme3'] =
+                    SG3Controller.text;
+                patientData['bipEchoDeuxieme3'] = bip3EchoDeuxiemeController.text;
+                patientData['DATEchoDeuxieme3'] =
+                    DAT3Controller.text;
+                patientData['LFEchoDeuxieme3'] =
+                    LF3Controller.text;
+                patientData['RACHISEchoDeuxieme3'] =
+                    RACHIS3Controller.text;
+                patientData['ESTOMACEchoDeuxieme3'] = ESTOMAC3Controller.text;
+                patientData['VITESSEchoDeuxieme3'] =
+                    VITESSE3Controller.text;
+                patientData['REINSEchoDeuxieme3'] =
+                    REINS3Controller.text;
+                patientData['ResteEchoDeuxieme3'] =
+                    REST3Controller.text;
+                patientData['liquideaminiotiqueEchoDeuxieme3'] =
+                    LIQUIDEAMINIOTIQUE3Controller.text;
+                             patientData['PLACEINTAEchoDeuxieme3'] =
+                    PLACENTA3Controller.text;
+                patientData['conclusionEchoDeuxieme3'] =
+                    conclusionEchoDeuxieme3Controller.text;
 //                   patientData['nombreDeFetusEchoTroisieme'] =
 //                       nombreDeFetusEchoTroisiemeController.text;
 //                   patientData['activiteCardiaqueEchoTroisieme'] =

@@ -3,11 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:mon_doctor/home.dart';
-import 'package:mon_doctor/pages/login_regester_page.dart';
-import 'package:mon_doctor/recherche_teacher.dart';
-import 'package:mon_doctor/searchPatient.dart';
-import 'package:mon_doctor/wedget_tree.dart';
+import 'home.dart';
+import 'pages/login_regester_page.dart';
+import 'recherche_teacher.dart';
+import 'searchPatient.dart';
+import 'wedget_tree.dart';
 
 import 'Examengynecologique.dart';
 import 'PatientInformationPage.dart';

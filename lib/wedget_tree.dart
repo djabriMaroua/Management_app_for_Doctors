@@ -1,4 +1,4 @@
-import 'package:mon_doctor/main.dart';
+import 'package:Med_Connect/main.dart';
 import 'package:onboarding/onboarding.dart';
 
 import 'onboarding.dart';

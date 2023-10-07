@@ -35,7 +35,7 @@ void _submitDataToFirestore(
 
     // Define the collection name (assuming "patientsinfo" is your collection name)
     CollectionReference patientsCollection =
-        firestore.collection('patients_gynecologique');
+        firestore.collection('gyne');
 
     // Add the patient data to Firestore
     patientsCollection.doc(patientId).set(patientData).then((_) {
@@ -800,7 +800,7 @@ class _gynecologiqueState extends State<gynecologique> {
   try {
     // Reference to the Firestore document
     DocumentReference documentReference =
-        FirebaseFirestore.instance.collection('gynecologique').doc(documentId);
+        FirebaseFirestore.instance.collection('gyne').doc(documentId);
 
     // Fetch the existing data
     DocumentSnapshot documentSnapshot = await documentReference.get();

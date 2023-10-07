@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mon_doctor/auth.dart';
+import '../auth.dart';
+ 
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../main.dart';

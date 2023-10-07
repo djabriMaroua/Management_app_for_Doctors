@@ -245,6 +245,71 @@ class PatientDataWidget extends StatelessWidget {
               patientData['Examen complémentaire'] ?? 'N/A'),
           spacedText('Groupe Sanguin:', patientData['groupeSanguin'] ?? 'N/A'),
           spacedText('FNS:', patientData['fns'] ?? 'N/A'),
+           Text('Echographie',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+
+              
+          spacedText('Examen complémentaire:',
+              patientData['Examen complémentaire'] ?? 'N/A'),  
+              ////////////////////////////
+              // Add the following fields to your PatientDataWidget class
+Text('1 er echo:', style: TextStyle(fontWeight: FontWeight.bold)),
+spacedText('Nombre de Fetus:', patientData['nombreDeFetus'] ?? 'N/A'),
+spacedText('Activité Cardiaque:', patientData['activiteCardiaque'] ?? 'N/A'),
+spacedText('Fréquence Cardiaque:', patientData['frequenceCardiaque'] ?? 'N/A'),
+spacedText('Mobilité:', patientData['mobilite'] ?? 'N/A'),
+spacedText('Longueur Cranio-Caudale:', patientData['longueurCranioCaudale'] ?? 'N/A'),
+spacedText('BIP:', patientData['bip'] ?? 'N/A'),
+spacedText('Périmètre Crânien:', patientData['perimetreCranien'] ?? 'N/A'),
+spacedText('Périmètre Abdominale:', patientData['perimetreAbdominale'] ?? 'N/A'),
+spacedText('Clarté Nucale:', patientData['clarteNucale'] ?? 'N/A'),
+spacedText('DAT:', patientData['dat'] ?? 'N/A'),
+spacedText('Pôle Céphalique:', patientData['poleCephalique'] ?? 'N/A'),
+spacedText('Abdomen:', patientData['abdomen'] ?? 'N/A'),
+spacedText('Membre:', patientData['membre'] ?? 'N/A'),
+spacedText('Annexes:', patientData['annexes'] ?? 'N/A'),
+spacedText('Conclusion:', patientData['conclusion'] ?? 'N/A'),
+////////////////////////////////////////////////////
+// Echo Deuxième 2
+Text('Echo Deuxième 2:', style: TextStyle(fontWeight: FontWeight.bold)),
+spacedText('Présentation:', patientData['presentationEchoDeuxieme'] ?? 'N/A'),
+spacedText('Activité Cardiaque:', patientData['activiteCardiaqueEchoDeuxieme'] ?? 'N/A'),
+spacedText('Mouvement Actif Foetueux:', patientData['mouvementactiffoeteuxEchoDeuxieme'] ?? 'N/A'),
+spacedText('LCC:', patientData['LCC'] ?? 'N/A'),
+spacedText('SG:', patientData['SGEchoDeuxieme'] ?? 'N/A'),
+spacedText('BIP:', patientData['bipEchoDeuxieme'] ?? 'N/A'),
+spacedText('DAT:', patientData['DATEchoDeuxieme'] ?? 'N/A'),
+spacedText('LF:', patientData['LFEchoDeuxieme'] ?? 'N/A'),
+spacedText('RACHIS:', patientData['RACHISEchoDeuxieme'] ?? 'N/A'),
+spacedText('ESTOMAC:', patientData['ESTOMACEchoDeuxieme'] ?? 'N/A'),
+spacedText('VITESSE:', patientData['VITESSEchoDeuxieme'] ?? 'N/A'),
+spacedText('REINS:', patientData['REINSEchoDeuxieme'] ?? 'N/A'),
+spacedText('Reste:', patientData['ResteEchoDeuxieme'] ?? 'N/A'),
+spacedText('Liquide Amniotique:', patientData['liquideaminiotiqueEchoDeuxieme'] ?? 'N/A'),
+spacedText('Placeinta:', patientData['PLACEINTAEchoDeuxieme'] ?? 'N/A'),
+spacedText('Conclusion:', patientData['conclusionEchoDeuxieme'] ?? 'N/A'),
+/////////////////////////////////////////////////////////////////////////
+// Echo Deuxième 3
+Text('Echo Deuxième 3:', style: TextStyle(fontWeight: FontWeight.bold)),
+spacedText('Présentation:', patientData['presentationEchoDeuxieme3'] ?? 'N/A'),
+spacedText('Activité Cardiaque:', patientData['activiteCardiaqueEchoDeuxieme3'] ?? 'N/A'),
+spacedText('Mouvement Actif Foetueux:', patientData['mouvementactiffoeteuxEchoDeuxieme3'] ?? 'N/A'),
+spacedText('LCC:', patientData['LCC3'] ?? 'N/A'),
+spacedText('SG:', patientData['SGEchoDeuxieme3'] ?? 'N/A'),
+spacedText('BIP:', patientData['bipEchoDeuxieme3'] ?? 'N/A'),
+spacedText('DAT:', patientData['DATEchoDeuxieme3'] ?? 'N/A'),
+spacedText('LF:', patientData['LFEchoDeuxieme3'] ?? 'N/A'),
+spacedText('RACHIS:', patientData['RACHISEchoDeuxieme3'] ?? 'N/A'),
+spacedText('ESTOMAC:', patientData['ESTOMAC3EchoDeuxieme'] ?? 'N/A'),
+spacedText('VITESSE:', patientData['VITESSE3EchoDeuxieme'] ?? 'N/A'),
+spacedText('REINS:', patientData['REINS3EchoDeuxieme'] ?? 'N/A'),
+spacedText('Reste:', patientData['REST3EchoDeuxieme'] ?? 'N/A'),
+spacedText('Liquide Amniotique:', patientData['LIQUIDEAMINIOTIQUE3EchoDeuxieme'] ?? 'N/A'),
+spacedText('Placeinta:', patientData['PLACEINTAEchoDeuxieme3'] ?? 'N/A'),
+spacedText('Conclusion:', patientData['conclusionEchoDeuxieme3'] ?? 'N/A'),
+// Add a similar block for the other sections (Echo Deuxième 2 and Echo Deuxième 3) as needed.
+
+
           
   StreamBuilder<QuerySnapshot>(
   stream: FirebaseFirestore.instance
@@ -292,8 +357,9 @@ class PatientDataWidget extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+
                 // Display other subcollection fields as needed
-                  Text('Personal Information:',
+                 Text('Personal Information:',
               style: TextStyle(fontWeight: FontWeight.bold)),
           spacedText('Nom:', patientData['nom'] ?? 'N/A'),
           spacedText('Prenom:', patientData['prenom'] ?? 'N/A'),
